@@ -1,0 +1,31 @@
+.wallpaper {
+    font-size: 1rem;
+    line-height: 1.8rem;
+
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+
+    @media only screen and (max-width: 650px) {
+        font-size: 1rem;
+        margin: 2rem 1rem;
+
+        h1 {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media only screen and (min-width: 650px) {
+        font-size: 1.1rem;
+        max-width: 650px;
+        margin-left: auto;
+        margin-right: auto;
+
+        h1 {
+            font-size: 2.5rem;
+        }
+    }
+
+    a {
+        color: var(--link-color);
+    }
+}
