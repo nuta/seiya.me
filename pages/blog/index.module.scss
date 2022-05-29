@@ -1,7 +1,10 @@
 ul.posts {
     list-style: none;
     padding-left: 0;
-    margin-top: 4rem;
+
+    @media only screen and (min-width: 650px) {
+        margin-top: 4rem;
+    }
 
     li {
         padding: 10px 7px;
@@ -16,5 +19,11 @@ ul.posts {
             cursor: pointer;
             background: var(--nav-link-hover-background-color);
         }
+    }
+}
+
+@media only screen and (max-width: 650px) {
+    .date {
+        display: none;
     }
 }
