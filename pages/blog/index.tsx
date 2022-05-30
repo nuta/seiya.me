@@ -8,18 +8,18 @@ export default function PostsIndex() {
     return (
         <BlogLayout meta={{ title: 'Blog - seiya.me' }}>
             <h1>Blog</h1>
-            <ul className={styles.posts}>
+            <div className={styles.posts}>
                 {
                     sortedPosts.map(({ slug, title, date }) =>
                         <Link href={'/blog/' + slug} key={slug}>
-                            <li>
+                            <a>
                                 <span className={styles.title}>{title}</span>
                                 <span className={styles.date}>{date}</span>
-                            </li>
+                            </a>
                         </Link>
                     )
                 }
-            </ul>
+            </div>
         </BlogLayout>
     )
 }

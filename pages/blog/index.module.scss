@@ -1,14 +1,14 @@
-ul.posts {
-    list-style: none;
-    padding-left: 0;
-
+.posts {
     @media only screen and (min-width: 650px) {
         margin-top: 4rem;
     }
 
-    li {
+    a {
+        color: inherit;
+        text-decoration: none;
         padding: 10px 7px;
         margin: 0;
+        border-radius: 2px;
 
         display: flex;
         justify-content: space-between;
