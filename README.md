@@ -1,1 +1,1 @@
-The internals of https://seiya.me
+https://seiya.me
