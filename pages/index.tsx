@@ -34,7 +34,10 @@ export default function Index() {
                         <Image src="/me.jpg" height="112" width="100" alt="me" />
                     </div>
                     <div className={styles.tldr}>
-                        <h1>Seiya Nuta</h1>
+                        <h1>
+                            Seiya Nuta
+                            <span className={styles.kanji}>(怒田 晟也)</span>
+                        </h1>
                         <div>
                             An operating system kernel enthusiast.
                         </div>
