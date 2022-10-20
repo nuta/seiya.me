@@ -43,6 +43,7 @@ export default function Index() {
                         </div>
                         <div className={styles.accounts}>
                             <span><a href="blog">Blog</a></span>
+                            <span>&nbsp;・&nbsp;<a href="https://twitter.com/seiyanuta">Twitter</a></span>
                             <span>&nbsp;・&nbsp;<a href="https://github.com/nuta">GitHub</a></span>
                             <span>&nbsp;・&nbsp;<a href="https://www.linkedin.com/in/seiyanuta">LinkedIn</a></span>
                             <br />
