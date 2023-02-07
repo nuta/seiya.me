@@ -1,11 +1,11 @@
-const { withContentlayer }  = require('next-contentlayer')
+const { withContentlayer } = require("next-contentlayer");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  pageExtensions: ["ts", "tsx", "js", "jsx"],
   experimental: {
     appDir: true,
   },
-}
+};
 
-module.exports = withContentlayer(nextConfig)
+module.exports = withContentlayer(nextConfig);
