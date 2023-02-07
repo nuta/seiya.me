@@ -1,3 +1,4 @@
+import { getPostBySlug, getPostByTitle } from "@/lib/blog";
 import { ImageResponse } from "@vercel/og";
 import { NextRequest } from "next/server";
 
@@ -7,6 +8,19 @@ export const config = {
 
 export default function handler(req: NextRequest) {
   const params = req.nextUrl.searchParams;
+  const title = params.get("title");
+  try {
+    getPostByTitle(title ?? "");
+  } catch (e) {
+    if (e instanceof Error && e.message.includes("not found")) {
+      return new Response("I'm not an arbitrary image generator", {
+        status: 418,
+      });
+    }
+
+    throw e;
+  }
+
   return new ImageResponse(
     (
       <div
@@ -26,7 +40,7 @@ export default function handler(req: NextRequest) {
           borderBottom: "20px solid rgb(115, 209, 255)",
         }}
       >
-        {params.get("title")}
+        {title}
       </div>
     ),
     {

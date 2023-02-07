@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { useMDXComponent } from "next-contentlayer/hooks";
-import { getAllSlugs, getPost } from "@/lib/blog";
+import { getAllSlugs, getPostBySlug } from "@/lib/blog";
 
 export async function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
@@ -13,7 +13,7 @@ const MDXComponents = {
 };
 
 export default function Post({ params }: { params: { slug: string } }) {
-  const post = getPost(params.slug);
+  const post = getPostBySlug(params.slug);
   const MDXContent = useMDXComponent(post.body.code);
 
   return (
