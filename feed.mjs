@@ -1,5 +1,5 @@
 import { writeFileSync } from 'fs';
-import { allPosts } from '../.contentlayer/generated/Post/_index.mjs';
+import { allPosts } from './.contentlayer/generated/Post/_index.mjs';
 import { Feed } from "feed";
 
 const feed = new Feed({

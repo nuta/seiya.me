@@ -1,6 +1,6 @@
 import { NextFetchEvent, NextRequest, NextResponse } from 'next/server'
 
-const TARGETS = {
+const TARGETS: any = {
     '/gsoc19': '/blog/gsoc19',
     '/implementing-hypervisor-on-resea': '/blog/implementing-hypervisor-on-resea',
     '/implementing-linux-abi': '/blog/implementing-linux-abi',
