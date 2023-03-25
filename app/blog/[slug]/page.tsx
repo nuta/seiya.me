@@ -22,6 +22,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
     },
     openGraph: {
       title: post.title,
+      description: post.title,
       siteName: "seiya.me",
       type: "website",
       url: `https://seiya.me/blog/${params.slug}`,
@@ -35,6 +36,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
     },
     twitter: {
       title: post.title,
+      description: post.title,
       card: "summary_large_image",
       creator: "@seiyanuta",
       images: [`https://seiya.me/api/og?title=${post.title}`],
