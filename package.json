@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "postbuild": "NODE_OPTIONS='--experimental-json-modules' node feed.mjs",
+    "build": "pnpm run generate-feeds && next build",
+    "generate-feeds": "NODE_OPTIONS='--experimental-json-modules' node feed.mjs",
     "start": "next start",
     "lint": "next lint"
   },

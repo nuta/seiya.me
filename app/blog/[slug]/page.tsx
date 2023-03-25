@@ -3,6 +3,7 @@ import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { getAllSlugs, getPostBySlug } from "@/lib/blog";
+import type { Metadata } from 'next';
 
 export async function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
@@ -11,6 +12,35 @@ export async function generateStaticParams() {
 const MDXComponents = {
   Image,
 };
+
+export async function generateMetadata({ params }): Promise<Metadata> {
+  const post = getPostBySlug(params.slug);
+  return {
+    title: `${post.title} - seiya.me`,
+    icons: {
+      icon: '/favicon.ico',
+    },
+    openGraph: {
+      title: post.title,
+      siteName: "seiya.me",
+      type: "website",
+      url: `https://seiya.me/blog/${params.slug}`,
+      images: [
+        {
+          url: `https://seiya.me/api/og?title=${post.title}`,
+          width: 1200,
+          height: 600,
+        }
+      ],
+    },
+    twitter: {
+      title: post.title,
+      card: "summary_large_image",
+      creator: "@seiyanuta",
+      images: [`https://seiya.me/api/og?title=${post.title}`],
+    },
+  };
+}
 
 export default function Post({ params }: { params: { slug: string } }) {
   const post = getPostBySlug(params.slug);
