@@ -1,9 +1,9 @@
-import type { Metadata } from 'next';
-import { Analytics } from '@vercel/analytics/react';
+import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 import "./global.css";
 
 export const metadata: Metadata = {
-  title: 'seiya.me',
+  title: "seiya.me",
 };
 
 export default function RootLayout({
