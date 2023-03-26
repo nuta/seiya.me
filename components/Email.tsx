@@ -25,7 +25,7 @@ export default function Email() {
     const [text, setText] = useState(reverse(getEmail()));
 
     const [styles, setStyles] = useState({
-        "unicode-bidi": "bidi-override",
+        unicodeBidi: "bidi-override",
         direction: "rtl"
     } as any);
 

@@ -1,6 +1,11 @@
 import Email from "@/components/Email";
+import { Metadata } from "next";
 import Head from "next/head";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+    title: "Seiya Nuta",
+}
 
 export default function Index() {
   return (
