@@ -9,7 +9,7 @@ export default function Email() {
         211, 203, 132, 199,
         207
     ];
-    const [text, setText] = useState('');
+    const [text, setText] = useState(' ');
     useEffect(() => {
         setText(chars.map(c => String.fromCharCode(c ^ 0xaa)).join(''));
     })

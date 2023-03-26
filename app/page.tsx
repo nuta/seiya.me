@@ -17,7 +17,7 @@ export default function Index() {
                     <div>
                         <h1>
                             Seiya Nuta
-                            <span >(怒田 晟也)</span>
+                            <span>(怒田 晟也)</span>
                         </h1>
                         <div>
                             An operating system kernel enthusiast.
@@ -28,7 +28,7 @@ export default function Index() {
                             <span>&nbsp;・&nbsp;<a href="https://github.com/nuta">GitHub</a></span>
                             <span>&nbsp;・&nbsp;<a href="https://www.linkedin.com/in/seiyanuta">LinkedIn</a></span>
                             <br />
-                            <span ><Email /></span>
+                            <span><Email /></span>
                         </div>
                     </div>
                 </header>
