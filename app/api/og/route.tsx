@@ -1,14 +1,13 @@
-import { getPostBySlug, getPostByTitle } from "@/lib/blog";
+import { getPostByTitle } from "@/lib/blog";
 import { ImageResponse } from "@vercel/og";
-import { NextRequest } from "next/server";
 
 export const config = {
   runtime: "edge",
 };
 
-export default function handler(req: NextRequest) {
-  const params = req.nextUrl.searchParams;
-  const title = params.get("title");
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const title = searchParams.get("title");
   try {
     getPostByTitle(title ?? "");
   } catch (e) {
