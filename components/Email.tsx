@@ -27,7 +27,7 @@ export default function Email() {
     const [styles, setStyles] = useState({
         "unicode-bidi": "bidi-override",
         direction: "rtl"
-    });
+    } as any);
 
     const reveal = () => {
             setText(getEmail());
