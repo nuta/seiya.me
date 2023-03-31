@@ -5,13 +5,13 @@ import Link from "next/link";
 function PostCard(post: Post) {
   return (
     <div className="mb-6">
-      <time dateTime={post.date} className="block text-sm text-slate-600">
+      <time dateTime={post.date} className="block text-sm text-slate-600 dark:text-slate-300">
         {format(parseISO(post.date), "LLLL d, yyyy")}
       </time>
       <h2 className="text-lg">
         <Link
           prefetch={false}
-          className="text-blue-700 hover:text-blue-900"
+          className="dark:text-sky-400 hover:text-sky-600"
           href={post.url}
         >
           {post.title}

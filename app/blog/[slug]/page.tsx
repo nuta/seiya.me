@@ -50,7 +50,7 @@ export default function Post({ params }: { params: { slug: string } }) {
 
   return (
     <>
-      <article className="mx-auto max-w-2xl py-16">
+      <article className="prose mx-auto max-w-2xl py-16">
         <div className="mb-6 text-center">
           <Link
             href="/"
@@ -60,7 +60,7 @@ export default function Post({ params }: { params: { slug: string } }) {
           </Link>
         </div>
         <div className="mb-6 text-center">
-          <h1 className="mb-1 text-3xl font-bold dark:text-slate-100">
+          <h1 className="mb-1 text-3xl font-bold dark:text-slate-200">
             {post.title}
           </h1>
           <time
