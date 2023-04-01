@@ -7,24 +7,27 @@ module.exports = {
       typography: ({ theme }) => ({
         DEFAULT: {
           css: {
-            fontSize: '1.05rem',
+            // fontSize: '1.05rem',
             'blockquote p:first-of-type::before': { content: 'none' },
             'blockquote p:first-of-type::after': { content: 'none' },
             'code::before': { content: 'none' },
             'code::after': { content: 'none' },
             a: {
-              color: theme('colors.sky[500]'),
-              textDecoration: 'none',
+              textDecoration: 'underline',
               fontWeight: '500',
+              textDecorationColor: "#a3a3a3",
+              textUnderlineOffset: "2px",
             },
             "a:hover": {
-              color: theme('colors.sky[700]'),
               textDecoration: 'underline',
               fontWeight: '500',
             },
             'a.anchor': {
               color: 'var(--tw-prose-title)',
               textDecoration: 'none',
+            },
+            "code": {
+              fontWeight: "normal",
             },
             "pre, pre[class*=language-]": {
               background: "#272b33",
