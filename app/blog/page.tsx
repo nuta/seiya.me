@@ -4,6 +4,10 @@ import Link from "next/link";
 import NavBar from "@/components/NavBar";
 import BottomBar from "@/components/BottomBar";
 
+export const metadata: Metadata = {
+  title: "seiya.me/blog",
+};
+
 function PostCard(post: Post) {
   return (
     <div className="mb-6">
