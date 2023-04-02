@@ -1,6 +1,8 @@
 import { compareDesc, format, parseISO } from "date-fns";
 import { allPosts, Post } from "contentlayer/generated";
 import Link from "next/link";
+import NavBar from "@/components/NavBar";
+import BottomBar from "@/components/BottomBar";
 
 function PostCard(post: Post) {
   return (
@@ -9,11 +11,7 @@ function PostCard(post: Post) {
         {format(parseISO(post.date), "LLLL d, yyyy")}
       </time>
       <h2 className="text-lg">
-        <Link
-          prefetch={false}
-          className="dark:text-sky-400 hover:text-sky-600"
-          href={post.url}
-        >
+        <Link href={post.url}>
           {post.title}
         </Link>
       </h2>
@@ -27,12 +25,16 @@ export default function Home() {
   });
 
   return (
-    <div className="mx-auto max-w-2xl py-16 text-center">
-      <h1 className="mb-8 text-3xl font-bold">Blog</h1>
+    <div className="mx-auto max-w-2xl py-8 px-6 text-center">
+      <NavBar />
+      <h1 className="mt-12 mb-8 text-3xl font-bold">Blog</h1>
 
       {posts.map((post, idx) => (
         <PostCard key={idx} {...post} />
       ))}
+      <div className="mt-12">
+        <BottomBar />
+      </div>
     </div>
   );
 }

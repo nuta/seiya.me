@@ -14,7 +14,7 @@ export default function RootLayout({
   return (
     <html>
       <head />
-      <body className="dark:bg-neutral-900 dark:text-neutral-200">{children}</body>
+      <body className="dark:bg-neutral-900 dark:text-neutral-200 w-full">{children}</body>
       <Analytics />
     </html>
   );

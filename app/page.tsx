@@ -2,17 +2,14 @@ import Email from "@/components/Email";
 import { Metadata } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { IBM_Plex_Sans } from 'next/font/google'
 
 export const metadata: Metadata = {
   title: "Seiya Nuta",
 }
 
-const ibmPlexSans = IBM_Plex_Sans({ subsets: ['latin'], weight: ['400', '700'] })
-
 export default function Index() {
   return (
-    <div className={ibmPlexSans.className}>
+    <div className="px-6">
       <Head>
         <title>Seiya Nuta</title>
       </Head>
@@ -52,7 +49,7 @@ export default function Index() {
 
         <section className="mt-4">
           <h1 className="text-xl font-bold">Projects</h1>
-          <ul className="list-disc mt-4 pl-10">
+          <ul className="list-disc mt-4 pl-4">
             <li className="mt-4">
               <a className="font-bold" href="https://github.com/nuta/resea">Resea</a>&nbsp;-&nbsp;
               A minimalistic and policy-free microkernel based operating
@@ -80,7 +77,7 @@ export default function Index() {
 
         <section className="mt-6">
           <h1 className="text-xl font-bold">Experience</h1>
-          <ul className="list-disc mt-4 pl-10">
+          <ul className="list-disc mt-4 pl-4">
             <li className="mt-3">
               <a href="https://summerofcode.withgoogle.com/archive/2019/projects/5871651231629312/">
                 Google Summer of Code 2019 student (LLVM Project)

@@ -4,6 +4,8 @@ import { format, parseISO } from "date-fns";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { getAllSlugs, getPostBySlug } from "@/lib/blog";
 import type { Metadata } from "next";
+import NavBar from "@/components/NavBar";
+import BottomBar from "@/components/BottomBar";
 
 export async function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
@@ -49,29 +51,27 @@ export default function Post({ params }: { params: { slug: string } }) {
   const MDXContent = useMDXComponent(post.body.code);
 
   return (
-    <article className="prose dark:prose-invert prose-neutral mx-auto max-w-2xl py-16">
-      <div className="mb-6 text-center">
-        <Link
-          href="/"
-          className="text-center text-sm font-bold uppercase text-blue-700"
-        >
-          Home
-        </Link>
+    <main className="mx-auto max-w-2xl w-full py-8 px-4">
+      <NavBar />
+      <article className="prose lg:prose-wider dark:prose-invert prose-neutral">
+        <div className="mt-16 mb-6 text-center ">
+          <h1 className="mb-1 text-3xl font-bold dark:text-slate-200">
+            {post.title}
+          </h1>
+          <time
+            dateTime={post.date}
+            className="text-sm text-slate-600 dark:text-slate-400"
+          >
+            {format(parseISO(post.date), "LLLL d, yyyy")}
+          </time>
+        </div>
+        <div>
+          <MDXContent components={MDXComponents} />
+        </div>
+      </article>
+      <div className="mt-20">
+        <BottomBar />
       </div>
-      <div className="mb-6 text-center">
-        <h1 className="mb-1 text-3xl font-bold dark:text-slate-200">
-          {post.title}
-        </h1>
-        <time
-          dateTime={post.date}
-          className="text-sm text-slate-600 dark:text-slate-400"
-        >
-          {format(parseISO(post.date), "LLLL d, yyyy")}
-        </time>
-      </div>
-      <div>
-        <MDXContent components={MDXComponents} />
-      </div>
-    </article>
+    </main>
   );
 }
