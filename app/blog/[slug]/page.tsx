@@ -27,10 +27,10 @@ export async function generateMetadata({ params }): Promise<Metadata> {
       description: post.title,
       siteName: "seiya.me",
       type: "website",
-      url: `https://seiya.me/blog/${params.slug}`,
+      url: `https://seiya.me/blog/${post.slug}`,
       images: [
         {
-          url: `https://seiya.me/api/og?title=${post.title}`,
+          url: `https://seiya.me/api/og?slug=${post.slug}`,
           width: 1200,
           height: 600,
         },

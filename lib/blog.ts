@@ -4,15 +4,6 @@ export function getAllSlugs(): string[] {
   return allPosts.map((post) => post.slug);
 }
 
-export function getPostByTitle(title: string): Post {
-  const post = allPosts.find((post) => post.title === title);
-  if (!post) {
-    throw new Error(`Post with title "${title}" not found`);
-  }
-
-  return post;
-}
-
 export function getPostBySlug(slug: string): Post {
   const post = allPosts.find((post) => post.slug === slug);
   if (!post) {

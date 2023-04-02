@@ -1,4 +1,4 @@
-import { getPostByTitle } from "@/lib/blog";
+import { getPostBySlug } from "@/lib/blog";
 import { ImageResponse } from "@vercel/og";
 
 export const config = {
@@ -7,19 +7,13 @@ export const config = {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const title = searchParams.get("title");
-  try {
-    getPostByTitle(title ?? "");
-  } catch (e) {
-    if (e instanceof Error && e.message.includes("not found")) {
-      return new Response("I'm not an arbitrary image generator", {
-        status: 418,
-      });
-    }
-
-    throw e;
+  const slug = searchParams.get("slug");
+  if (!slug) {
+    console.error("invalid OG image request:", request.url)
+    return new Response("missing slug", { status: 400 });
   }
 
+  const title = getPostBySlug(slug).title;
   return new ImageResponse(
     (
       <div
