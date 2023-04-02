@@ -2,11 +2,11 @@
 
 @layer base {
     a {
-        @apply text-sky-600 underline;
+        @apply text-sky-500 underline;
     }
 
     a:hover {
-        @apply text-sky-500 underline;
+        @apply text-sky-600 underline;
     }
 }
 

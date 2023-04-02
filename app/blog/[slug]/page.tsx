@@ -69,7 +69,7 @@ export default function Post({ params }: { params: { slug: string } }) {
           <MDXContent components={MDXComponents} />
         </div>
       </article>
-      <div className="mt-20">
+      <div className="lg:mt-16 mt-8">
         <BottomBar />
       </div>
     </main>
