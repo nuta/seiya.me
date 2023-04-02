@@ -41,7 +41,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
       description: post.title,
       card: "summary_large_image",
       creator: "@seiyanuta",
-      images: [`https://seiya.me/api/og?title=${post.title}`],
+      images: [`https://seiya.me/api/og?slug=${post.slug}`],
     },
   };
 }
