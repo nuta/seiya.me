@@ -3,6 +3,7 @@ import { allPosts, Post } from "contentlayer/generated";
 import Link from "next/link";
 import NavBar from "@/components/NavBar";
 import BottomBar from "@/components/BottomBar";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "seiya.me/blog",
