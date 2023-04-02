@@ -52,7 +52,7 @@ export default function Post({ params }: { params: { slug: string } }) {
 
   return (
     <main className="mx-auto max-w-2xl w-full py-8 px-4">
-      <NavBar />
+      <NavBar breadcrumb={[{ title: "blog", "dest": "/blog" }]} />
       <article className="prose lg:prose-wider dark:prose-invert prose-neutral">
         <div className="mt-16 mb-6 text-center ">
           <h1 className="mb-1 text-3xl font-bold dark:text-slate-200">

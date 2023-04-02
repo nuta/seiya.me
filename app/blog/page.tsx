@@ -31,7 +31,7 @@ export default function Home() {
 
   return (
     <div className="mx-auto max-w-2xl py-8 px-6 text-center">
-      <NavBar />
+      <NavBar breadcrumb={[]} />
       <h1 className="mt-12 mb-8 text-3xl font-bold">Blog</h1>
 
       {posts.map((post, idx) => (
