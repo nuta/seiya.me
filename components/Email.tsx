@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 function reverse(text) {
     let reversed = '';
@@ -30,8 +30,8 @@ export default function Email() {
     } as any);
 
     const reveal = () => {
-            setText(getEmail());
-            setStyles({});
+        setText(getEmail());
+        setStyles({});
     }
 
     const [user, domain] = text.split('@');
@@ -41,7 +41,7 @@ export default function Email() {
     }
     return (
         <span style={styles} onMouseOver={reveal}>
-            {user}<span style={{display: "none"}}>invisible</span>{atmark}{domain}
+            {user}<span style={{ display: "none" }}>invisible</span>{atmark}{domain}
         </span>
     )
 }
