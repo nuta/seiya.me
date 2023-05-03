@@ -61,8 +61,8 @@ export default function Index() {
             <li className="mt-4">
               <a className="font-bold" href="https://github.com/nuta/kerla">Kerla</a>&nbsp;-&nbsp;
               A monolithic kernel with Linux binary compatibility written from
-              scratch in Rust. I&apos;ve implemented basic *NIX kernel
-              features like fork/execve, signals, mmap, pipe, poll, tty/pty,
+              scratch in Rust. I&apos;ve implemented basic kernel features like
+              fork/execve, signals, mmap, pipe, poll, tty/pty,
               tmpfs, UDP/TCP sockets, etc. You can try it on an ephemeral demo
               microVM running Kerla: <code className="bg-neutral-700 px-2 py-1 rounded-md select-all ">ssh&nbsp;root@demo.kerla.dev</code>
             </li>
