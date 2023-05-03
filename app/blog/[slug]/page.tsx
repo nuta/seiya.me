@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import { getAllSlugs, getPostBySlug } from "@/lib/blog";
