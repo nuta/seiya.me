@@ -56,7 +56,7 @@ export default function Index() {
               </a>
               &nbsp;-&nbsp;
               A comprehensive guide that delves into the world of microkernels
-              including real-world microkernels like seL4, MINIX3, and Mach,
+              including real-world microkernels (seL4, MINIX3, and Mach)
               as well as an educational microkernel-based OS
               (<a href="https://github.com/nuta/microkernel-book">HinaOS</a>).
               It covers concepts of operating systems,

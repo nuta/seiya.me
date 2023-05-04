@@ -10,7 +10,7 @@ date: Mar 4, 2023
 <Image alt="書籍のカバー画像" src="/media/microkernel-book-2023/microkernel-book-cover.jpg" width={600/2} height={775/2} />
 </a>
 
-表紙は[エナガの団子](https://www.sagami-portal.com/city/scmblog/archives/29294)をイメージして描いてもらいました。団子状態の雛たちのように、マイクロカーネルOSでもOSの機能を提供するプロセスが複数ある設計 (マルチサーバOS) がよく見られます。
+表紙は[エナガの団子](https://www.sagami-portal.com/city/scmblog/archives/29294)をイメージして描いてもらいました。団子状態の雛たちのように、マイクロカーネルOSでもOSの機能を提供する複数のプロセスが集まっている設計 (マルチサーバOS) がよく見られます。
 
 ## 内容
 
@@ -18,8 +18,8 @@ date: Mar 4, 2023
 
 また、時折マイクロカーネルOSに関係なく面白い研究や一風変わったOSも紹介しています。「マイクロカーネル」が主題ではありますが、それだけではなくOS全体の要素が詰まった一冊です。
 
-上述の実用的なマイクロカーネルに加えて、本書用に書いた教育用OS「<a href="https://github.com/nuta/microkernel-book">HinaOS</a>」を使って実装のイメージを掴めるようにしてあります。実用的なOSというものは複雑でとっつきにくいものですが、HinaOSは非常にシンプルかつ素朴な実装になっています。シンプルといっても、ファイルシステムやTCP/IPプロトコルスタックといったハックしがいのある機能をしっかり実装しています。詳しい人向けに説明すると、C言語で書かれた32ビットRISC-V CPU ([QEMU virtマシン
-](https://www.qemu.org/docs/master/system/riscv/virt.html)) 用のマルチサーバOSです。
+上述の実用的なマイクロカーネルに加えて、本書用に書いた教育用OS「<a href="https://github.com/nuta/microkernel-book">HinaOS</a>」を使って実装のイメージを掴めるようにしてあります。実用的なOSというものは複雑でとっつきにくいものですが、HinaOSは非常にシンプルかつ素朴な実装になっています。シンプルといっても、ファイルシステムやTCP/IPプロトコルスタックといったハックしがいのある機能をしっかり実装しています。詳しい人向けに説明すると、32ビットRISC-V CPU ([QEMU virtマシン
+](https://www.qemu.org/docs/master/system/riscv/virt.html)) 用のC言語で書かれたマルチサーバOSです。
 
 以下が本書の目次です。筆者のお気に入りは「信頼性とセキュリティ」です。アプリケーションからカーネルのメモリ領域にアクセスできるHinaOSの脆弱性を通して、考えなしにマイクロカーネルを採用してもセキュアなOSにはならないという話をしています。
 
