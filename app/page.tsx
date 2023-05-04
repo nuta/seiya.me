@@ -48,6 +48,26 @@ export default function Index() {
         </header>
 
         <section className="mt-4">
+          <h1 className="text-xl font-bold">Publications</h1>
+          <ul className="list-disc mt-4 pl-4">
+            <li className="mt-4">
+              <a className="font-bold italic" href="https://www.hanmoto.com/bd/isbn/9784798068718">
+                &ldquo;Design and Implementation of Microkernels&rdquo;
+              </a>
+              &nbsp;-&nbsp;
+              A comprehensive guide that delves into the world of microkernels
+              including real-world microkernels like seL4, MINIX3, and Mach,
+              as well as an educational microkernel-based OS
+              (<a href="https://github.com/nuta/microkernel-book">HinaOS</a>).
+              It covers concepts of operating systems,
+              how microkernels make them happen,
+              and recent intriguing research topics.
+              Written in Japanese.
+            </li>
+          </ul>
+        </section>
+
+        <section className="mt-6">
           <h1 className="text-xl font-bold">Projects</h1>
           <ul className="list-disc mt-4 pl-4">
             <li className="mt-4">
