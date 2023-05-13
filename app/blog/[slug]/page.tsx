@@ -66,6 +66,7 @@ export default function Post({ params }: { params: { slug: string } }) {
           </time>
         </div>
         <div>
+          {/* @ts-ignore RSC may return Promise<Element> */}
           <MDXContent components={MDXComponents} />
         </div>
       </article>
