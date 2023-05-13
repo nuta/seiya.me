@@ -5,13 +5,14 @@ import { getAllSlugs, getPostBySlug } from "@/lib/blog";
 import type { Metadata } from "next";
 import NavBar from "@/components/NavBar";
 import BottomBar from "@/components/BottomBar";
+import LinkCard from "@/components/LinkCard";
 
 export async function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
 }
 
 const MDXComponents = {
-  Image,
+  Image, LinkCard,
 };
 
 export async function generateMetadata({ params }): Promise<Metadata> {

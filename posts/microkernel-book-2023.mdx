@@ -49,6 +49,24 @@ date: Mar 4, 2023
 
 また、実装のシンプルさだけでなく開発者体験に力を入れました。OSのソースコードに触るのが初めての人でもハックしやすいように、[手軽に環境構築を構築できる](https://github.com/nuta/microkernel-book/tree/main#%E9%96%8B%E7%99%BA%E7%92%B0%E5%A2%83%E6%A7%8B%E7%AF%89)ようにしたり、カーネル・アプリケーション両方をシームレスに[GDB (デバッガ) でアタッチできる](https://github.com/nuta/microkernel-book/blob/main/DEBUG.md#%E3%83%87%E3%83%90%E3%83%83%E3%82%AC-gdb-%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%9F%E3%83%87%E3%83%90%E3%83%83%E3%82%B0)ようにしたり、本書中で説明していない部分も理解しやすいようにコメントをかなり丁寧に書いてあります。説明が足りないと感じる部分があれば、ぜひ[GitHub Discussions](https://github.com/nuta/microkernel-book/discussions/new?category=help)で指摘してください。
 
+## どんな本でないか
+
+HinaOSをベースに自作OSを作るのには十分ですが、**ゼロから**OSを作るにはこの本一冊だけでは不十分です。本書では「なぜこのような設計・実装になっているのか」を重視しており、CPUの初期化処理など (例えばRISC-VのM-modeの話) の説明を深掘りすることを避けています。もちろん参考になるようにコメントでたくさん説明してありますが、完全に理解したい方は他の参考文献を辿る必要があります。
+
+ゼロからOSを作れるようになりたい方におすすめな副読本をいくつか紹介します。拙作ではシンプルさと将来性を鑑みてRISC-V CPUを採用しましたが、参考文献が豊富なのはx86/x86-64 CPUです。RISC-Vではありませんが、共有する概念が多く参考になります。
+
+- [ゼロからのOS自作入門 (内田公太著)](https://book.mynavi.jp/ec/products/detail/id=121220): x86-64 CPU (64ビットのIntel CPU) 向けのOSをタイトル通り「ゼロから」作る本です。ウィンドウシステム (GUI) やUSBデバイスドライバなど面白いトピックもカバーしているので、MikanOSをマイクロカーネルの設計でゼロから作るのも面白いでしょう。
+<LinkCard url="https://book.mynavi.jp/ec/products/detail/id=121220" />
+
+- [30日でできる！OS自作入門 (川合秀実著)](https://book.mynavi.jp/ec/products/detail/id=22078): x86 CPU (32ビットのIntel CPU) 向けのOSをゼロから作る本です。筆者はこの本でアセンブリとC言語のポインタを概念を理解できました。
+<LinkCard url="https://book.mynavi.jp/ec/products/detail/id=22078" />
+
+- [作りながら学ぶOSカーネル 保護モードプログラミングの基本と実践 (金凡峻 著)](https://www.shuwasystem.co.jp/book/9784798022543.html): これまたx86 CPU向けのカーネルの作り方を解説した本です。アセンブリ主体で説明されており、x86 CPUの難しい概念・動作を実装する時に役立ちます。
+<LinkCard url="https://www.shuwasystem.co.jp/book/9784798022543.html" />
+
+- [はじめて読む486―32ビットコンピュータをやさしく語る (蒲地 輝尚 著)](https://www.hanmoto.com/bd/isbn/9784756102133): これもまたx86 CPU向けの本ですが、OSの作り方というよりはx86 CPUの仕組みを解説した本です。とても分かりやすい。
+<LinkCard url="https://www.hanmoto.com/bd/isbn/9784756102133" />
+
 ## 執筆のはなし
 
 最後に、裏話的なものを少し。本書は、[2020年に技術書典で出した同人誌](https://seiya.me/blog/microkernel-book)を書き直した商業出版です。昨年の8月ごろにお声をかけていただき、今年の3月までの約半年間の間、仕事の合間を縫って執筆しました。執筆以外にもHinaOSの実装やMINIX3、seL4、GNU Hurdの調査も必要であったこともあり、休みらしい休みのない半年間でした。プログラミングを学び始め、またOSの世界の虜になったのは[『30日でできる！OS自作入門 (川合秀実 著)』](https://book.mynavi.jp/ec/products/detail/id=22078)がきっかけでした。同じように、本書を読んでOSの世界に興味を持ってくれる人が増えると嬉しいなと思っています。
