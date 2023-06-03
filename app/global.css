@@ -12,3 +12,5 @@
 
 @tailwind components;
 @tailwind utilities;
+
+@import 'prism-themes/themes/prism-one-dark.min.css';
