@@ -18,6 +18,7 @@ const MDXComponents = {
 export async function generateMetadata({ params }): Promise<Metadata> {
   const post = getPostBySlug(params.slug);
   return {
+    metadataBase: new URL('https://seiya.me'),
     title: `${post.title} - seiya.me`,
     icons: {
       icon: "/favicon.ico",
