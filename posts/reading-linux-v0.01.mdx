@@ -221,10 +221,10 @@ It looks as if it's fork(2)-ing in the kernel space, but it's actually not. The 
 ```c
 #define move_to_user_mode() \
 __asm__ ("movl %%esp,%%eax\n\t" \ // EAX = current stack pointer
-	"pushl $0x17\n\t" \           // Set SS to user data segment
+	"pushl $0x17\n\t" \           // SS (user data seg)
 	"pushl %%eax\n\t" \           // ESP
 	"pushfl\n\t" \                // EFLAGS
-	"pushl $0x0f\n\t" \           // CS register (user code seg)
+	"pushl $0x0f\n\t" \           // CS (user code seg)
 	"pushl $1f\n\t" \             // EIP (return address)
 	"iret\n" \                    // switch to user mode
 	"1:\tmovl $0x17,%%eax\n\t" \  // IRET returns to this address
