@@ -6,7 +6,7 @@ lang: en
 
 Linux kernel is often mentioned as a overwhelmingly large open source software. As of this writing, the latest version is v6.5-rc5, which consists of 36M lines of code. Needless to say, Linux is a fruit of hard work of many contributors over the decades.
 
-However, the first version of Linux, v0.01 was pretty small. It consisted of only 10239 lines of code. Excluding comments and blank lines, it was only 8,670 lines. It's small enough to understand and is a good starting point to learn about the internals of UNIX-like operating system kernels.
+However, the first version of Linux, v0.01 was pretty small. It consisted of only 10,239 lines of code. Excluding comments and blank lines, it was only 8,670 lines. It's small enough to understand and is a good starting point to learn about the internals of UNIX-like operating system kernels.
 
 Reading v0.01 was really fun for me. It was like visiting Computer History Museum in Mountain View - finally I witnessed *tales* are indeed true! I wrote this post to share this exciting experience with you. Let's dive in!
 
@@ -44,7 +44,7 @@ int sys_mount()
 
 ## Deeply hardcoded for Intel 386 architecture
 
-There is [a very famous debate](https://www.oreilly.com/openbook/opensources/book/appa.html) Linus had a debate with Andrew S. Tanenbaum, the author of MINIX, about the design of operating systems: monolithic vs. microkernel, which is better design? 
+There is [a very famous debate](https://www.oreilly.com/openbook/opensources/book/appa.html) Linus had with Andrew S. Tanenbaum, the author of MINIX, about the design of operating systems: monolithic vs. microkernel, which is better design? 
 
 Tanenbaum [pointed out that](https://www.oreilly.com/openbook/opensources/book/appa.html#:~:text=LINUX%20is%20tied%20fairly%20closely%20to%20the%2080x86) Linux is (or *was*) not portable because it was deeply hardcoded for Intel 386 (i386):
 
@@ -65,9 +65,9 @@ return dest;
 }
 ```
 
-It's written in assembly with string instructions of i386. Yes it can be found in today's portable implementations of `strcpy`, but it's in `include/string.h` - not in somewhere like `include/i386/string.h`. Moreover, no `#ifdef` to switch the implementation for different architectures. It's just hardcoded for Intel 386.
+It's written in assembly with string instructions of i386. Yes it can be found as an optimized implementation of `strcpy`, but it's in `include/string.h` - not in somewhere like `include/i386/string.h`. Moreover, no `#ifdef` to switch the implementation for different architectures. It's just hardcoded for Intel 386.
 
-Also, supported devices are for PC/AT compatible machines, here's the list of them:
+Also, only PC/AT devices were supported:
 
 - [CMOS](https://wiki.osdev.org/CMOS): Real-time clock (`init/main.c`).
 - [Programmable Interval Timer (PIT)](https://wiki.osdev.org/Programmable_Interval_Timer): Timer (`kernel/sched.c`).
@@ -138,7 +138,7 @@ By the way, there's an interesting comment about the scheduler:
  * in all circumstances (ie gives IO-bound processes good response etc).
 ```
 
-Yes it's indeed good code. Unfortunately (or fortunately), this prophecy is false. Linux became one of most practical and performant kernel which has introduced many new scheduling improvements and algorithms over the years, like Completely Fair Scheduler (CFS).
+Yes it's indeed good code. Unfortunately (or fortunately), this prophecy is false. Linux became one of most practical and performant kernel which has introduced many scheduling improvements and new algorithms over the years, like Completely Fair Scheduler (CFS).
 
 ## Kernel panic in 5 lines
 
@@ -253,7 +253,7 @@ Today, machines with 8GB RAM are very common. Furthermore, 8GB is not enough at 
 
 Lastly, I tried to compile the kernel with modern toolchains but failed to do so. I thought GCC (or C itself) has good backward compatibility, but it's not sufficient. Even with older standard `-std=gnu90` caused compile errors that are not trivial to fix.
 
-One fun fact is Linux had used his own GCC with a feature named `-mstring-insns`:
+One fun fact is Linus had used his own GCC with a feature named `-mstring-insns`:
 
 ```
 # If you don't have '-mstring-insns' in your gcc (and nobody but me has :-)
