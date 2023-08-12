@@ -33,7 +33,7 @@ umount uname unlink ustat utime waitpid write
 - It supports reading, writing, creating, and deleting files and directories. Also, other fundamental concepts like `chmod(2)` (permission), `chown(2)` (owner), and `pipe(2)` (inter-process communication) are also supported.
 - `fork(2)` and `execve(2)` were there. Only `a.out` executable format was supported.
 - The concept of sockets was not implemented. Thus, no network support.
-- Some features like `mount(2)` was not implemented: they just return `ENOSYS`:
+- Some features like `mount(2)` were not implemented. They just return `ENOSYS`:
 
 ```c
 int sys_mount()
