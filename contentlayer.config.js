@@ -1,7 +1,6 @@
 import { defineDocumentType, makeSource } from "contentlayer/source-files";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeCodeTitles from "rehype-code-titles";
 import rehypePrism from "rehype-prism-plus";
 
@@ -46,15 +45,6 @@ export default makeSource({
       rehypeSlug,
       rehypeCodeTitles,
       rehypePrism,
-      [
-        rehypeAutolinkHeadings,
-        {
-          behavior: "wrap",
-          properties: {
-            className: ["anchor"],
-          },
-        },
-      ],
     ],
   },
 });

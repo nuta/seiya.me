@@ -3,14 +3,10 @@ module.exports = {
   content: ["./app/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
-      typography: ({ theme }) => ({
-        wider: {
-          css: {
-            "pre, pre[class*=language-]": {
-              margin: '0 -100px !important',
-            },
-          },
-        },
+      fontSize: {
+        base: ['20px', '28px'],
+       },
+        typography: ({ theme }) => ({
         DEFAULT: {
           css: {
             'blockquote p:first-of-type::before': { content: 'none' },
@@ -34,6 +30,11 @@ module.exports = {
             },
             "code": {
               fontWeight: "normal",
+              fontSize: "0.86em !important",
+              fontFamily: "ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace !important",
+            },
+            "h1, h2, h3, h4, h5, h6": {
+              fontWeight: "700 !important",
             },
             "pre, pre[class*=language-]": {
               background: "#272b33",

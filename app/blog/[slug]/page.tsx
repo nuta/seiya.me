@@ -6,6 +6,9 @@ import type { Metadata } from "next";
 import NavBar from "@/components/NavBar";
 import BottomBar from "@/components/BottomBar";
 import LinkCard from "@/components/LinkCard";
+import { Source_Sans_3 } from 'next/font/google'
+
+const SourceSans3 = Source_Sans_3({ weight: ['400', '700'], style: ['normal', 'italic'], subsets: ['latin'], display: 'swap' })
 
 export async function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
@@ -54,7 +57,7 @@ export default function Post({ params }: { params: { slug: string } }) {
   return (
     <main className="mx-auto max-w-2xl w-full py-8 px-4">
       <NavBar breadcrumb={[{ title: "blog", "dest": "/blog" }]} />
-      <article className="prose lg:prose-wider dark:prose-invert prose-neutral">
+      <article className={`prose lg:prose-wider dark:prose-invert prose-neutral text-lg max-w-full ${SourceSans3.className}`}>
         <div className="mt-16 mb-6 text-center ">
           <h1 className="mb-1 text-3xl font-bold dark:text-slate-200">
             {post.title}
@@ -71,7 +74,7 @@ export default function Post({ params }: { params: { slug: string } }) {
           <MDXContent components={MDXComponents} />
         </div>
       </article>
-      <div className="lg:mt-16 mt-8">
+      <div className="lg:mt-16 mt-8 mb-16">
         <BottomBar />
       </div>
     </main>
