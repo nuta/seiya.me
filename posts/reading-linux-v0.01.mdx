@@ -65,7 +65,7 @@ return dest;
 }
 ```
 
-It's written in assembly with string instructions of i386. Yes it can be found as an optimized implementation of `strcpy`, but it's in `include/string.h` - not in somewhere like `include/i386/string.h`. Moreover, no `#ifdef` to switch the implementation for different architectures. It's just hardcoded for Intel 386.
+It's written in assembly with string instructions of i386. Yes it can be found as an optimized implementation of `strcpy` in [today's Linux](https://elixir.bootlin.com/linux/v6.4.10/source/arch/x86/lib/string_32.c#L19), but it's in `include/string.h` - not in somewhere like `include/i386/string.h`. Moreover, no `#ifdef` to switch the implementation for different architectures. It's just hardcoded for Intel 386.
 
 Also, only PC/AT devices were supported:
 
