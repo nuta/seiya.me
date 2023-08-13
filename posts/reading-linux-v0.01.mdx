@@ -50,7 +50,7 @@ Tanenbaum [pointed out that](https://www.oreilly.com/openbook/opensources/book/a
 
 >   MINIX was designed to be reasonably portable, and has been ported from the Intel line to the 680x0 (Atari, Amiga, Macintosh), SPARC, and NS32016. LINUX is tied fairly closely to the 80x86.  Not the way to go.
 
-It's indeed true. Linux v0.01 was deeply hardcoded for o386. Here's the implementation of `strcpy` in `include/string.h`:
+It's indeed true. Linux v0.01 was deeply hardcoded for i386. Here's the implementation of `strcpy` in `include/string.h`:
 
 ```c
 extern inline char * strcpy(char * dest,const char *src)
