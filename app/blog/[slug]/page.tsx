@@ -15,7 +15,9 @@ export async function generateStaticParams() {
 }
 
 const MDXComponents = {
-  Image, LinkCard,
+  LinkCard,
+  // https://github.com/hashicorp/next-mdx-remote/issues/405#issuecomment-1755491272
+  Image: (props) => <Image {...props} />,
 };
 
 export async function generateMetadata({ params }): Promise<Metadata> {

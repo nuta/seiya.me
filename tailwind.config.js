@@ -5,8 +5,8 @@ module.exports = {
     extend: {
       fontSize: {
         base: ['20px', '28px'],
-       },
-        typography: ({ theme }) => ({
+      },
+      typography: ({ theme }) => ({
         DEFAULT: {
           css: {
             'blockquote p:first-of-type::before': { content: 'none' },
@@ -54,6 +54,5 @@ module.exports = {
   },
   plugins: [
     require("@tailwindcss/typography"),
-    require("@tailwindcss/line-clamp"),
   ],
 };

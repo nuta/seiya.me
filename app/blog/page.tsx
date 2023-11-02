@@ -6,7 +6,7 @@ import BottomBar from "@/components/BottomBar";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "seiya.me - Blog",
+  title: "Seiya Nuta - Blog",
 };
 
 function PostCard(post: Post) {

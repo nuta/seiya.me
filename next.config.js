@@ -4,7 +4,6 @@ const { withContentlayer } = require("next-contentlayer");
 const nextConfig = {
   pageExtensions: ["ts", "tsx", "js", "jsx"],
   experimental: {
-    appDir: true,
   },
 };
 

@@ -1,6 +1,5 @@
 import Email from "@/components/Email";
 import { Metadata } from "next";
-import Head from "next/head";
 import Image from "next/image";
 
 export const metadata: Metadata = {
@@ -10,10 +9,6 @@ export const metadata: Metadata = {
 export default function Index() {
   return (
     <div className="px-6">
-      <Head>
-        <title>Seiya Nuta</title>
-      </Head>
-
       <main className="container max-w-2xl mx-auto py-16 leading-7">
         <header className="text-center">
           <Image className="mx-auto rounded-3xl" src="/me.jpg" height="112" width="100" alt="me" />
