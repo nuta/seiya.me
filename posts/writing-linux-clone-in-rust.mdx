@@ -11,12 +11,6 @@ In other words, **support running unmodified Linux binaries**!
 
 I've already implemented basic features: `fork(2)` and `execve(2)`, file operations, initramfs, TCP/UDP sockets, signals, tty / pty, pipe, poll, etc.
 
-You can ssh into Kerla running on an ephemeral Firecracker microVM which is automatically launched just for you (it accepts arbitrary passwords):
-
-```
-$ ssh root@demo.kerla.dev
-```
-
 In this post, I'll share my first impression of using Rust in a OS kernel.
 
 ```rust

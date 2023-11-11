@@ -12,11 +12,7 @@ lang: ja
 
 ## 自作OS「Kerla」の紹介
 
-[Kerla（かーら）](https://github.com/nuta/kerla)はRustで書かれたLinux ABI互換モノリシックカーネルです。今年の春頃から作り始め、[Dropbear](https://matt.ucc.asn.au/dropbear/dropbear.html)というSSHサーバが動作する程度には基本的なUNIXの機能が実装されています。具体的には、ファイルの読み書きやUDP/TCPソケット、fork/exec、シグナル、擬似端末といったものです。遊んでみたい人は SSHで実際に動いているKerlaにログインできます。SSH接続ごとに専用のVMがFirecracker上で立ち上がるようになっています。
-
-```
-$ ssh root@demo.kerla.dev
-```
+[Kerla（かーら）](https://github.com/nuta/kerla)はRustで書かれたLinux ABI互換モノリシックカーネルです。今年の春頃から作り始め、[Dropbear](https://matt.ucc.asn.au/dropbear/dropbear.html)というSSHサーバが動作する程度には基本的なUNIXの機能が実装されています。具体的には、ファイルの読み書きやUDP/TCPソケット、fork/exec、シグナル、擬似端末といったものです。
 
 カーネル実装の雰囲気を軽く紹介すると、Kerlaでは以下のようにシステムコールが実装されています。
 
