@@ -13,7 +13,7 @@ Looks super intuitive, right? Now, we want to receive messages from others so th
 
 ```rs
 pub fn main() {
-    let ch = todo!(); // the client channel from somewhere
+    let ch = todo!(); // the client channel from outer space
     loop {
         let m = ch.recv();
         match m {
