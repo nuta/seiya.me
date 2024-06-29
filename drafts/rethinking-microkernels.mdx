@@ -20,7 +20,7 @@ One of characteristics of recent microkernels is their design for security. Very
 
 However, microkernel is just a tiny part of the whole OS. The security of OS service processes (aka. *servers*) running on top of microkernels are often overlooked, and they're just a PoC-quality implementation.
 
-**Lesson: Microkernels should value how people implement userland.**
+**Lesson: Microkernel OS security depends on how people implement userland.**
 
 ### OS development is painful and scary
 
@@ -30,13 +30,9 @@ That said though, today's OS developement looks like web development before the 
 
 **Lesson: Microkernels should provide neat developer experience.**
 
-## DX is key!
-
-
-
 ## Rethinking microkernels
 
-Here's my 5 design principles 
+Here's my 3 design principles 
 
 ### API-first design: microkernel with compromises
 
@@ -46,13 +42,12 @@ Here's my 5 design principles
 
 
 
-### Design OS as a distributed system
-
-
-
 ### Nano-services: process is just one of isolation mechanism
 
 
 
+### Design OS as a distributed system
 ### Don't emulate everything: use real Linux in microVM
 
+
+## Why Rust?
