@@ -14,8 +14,9 @@ export default async function BlogLayout({ children, meta }) {
         <meta content="width=device-width, initial-scale=1" name="viewport" />
         <style>{`
           body {
-            color: rgba(33, 33, 33, 0.9);
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo,sans-serif;
+            color: rgb(64, 64, 64);
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo,sans-serif;
+            font-optical-sizing: auto;
           }
 
           pre {
@@ -31,11 +32,11 @@ export default async function BlogLayout({ children, meta }) {
           }
 
           h3, h4, h5 {
-            font-size: 1rem;
+            font-size: 1.2rem;
           }
 
           h1, h2, h3, h4, h5 {
-            padding-top: 2rem;
+            padding-top: 1.5rem;
           }
 
           h1 > a, h2 > a, h3 > a {
@@ -44,7 +45,7 @@ export default async function BlogLayout({ children, meta }) {
           }
           
           main {
-            line-height: 2rem;
+            line-height: 1.75rem;
           }
 
           main p + p {
@@ -52,7 +53,7 @@ export default async function BlogLayout({ children, meta }) {
           }
         `}</style>
       </head>
-      <body className="max-w-screen-md mx-auto px-4">
+      <body className="max-w-screen-sm mx-auto px-4">
         <header className="mb-12">
           <h1>{meta.title}</h1>
           <p className="mt-0 text-neutral-500">
@@ -61,7 +62,7 @@ export default async function BlogLayout({ children, meta }) {
             {date}
           </p>
         </header>
-        <main>
+        <main className="text-lg">
           {children}
         </main>
         <footer className="text-sm text-center leading-3 text-neutral-500 mt-8 mb-8">
