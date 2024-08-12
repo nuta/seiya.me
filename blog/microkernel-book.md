@@ -1,5 +1,6 @@
 ---
 title: 技術書典8 『マイクロカーネルの設計と実装』
+layout: blog
 lang: ja
 date: 2020-05-01
 ---

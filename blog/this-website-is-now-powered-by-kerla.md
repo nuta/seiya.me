@@ -1,6 +1,7 @@
 ---
 title: この個人サイトは自作OSで動いています
 date: 2021-12-23
+layout: blog
 lang: ja
 ---
 

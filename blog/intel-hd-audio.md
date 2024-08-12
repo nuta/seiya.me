@@ -1,5 +1,6 @@
 ---
 title: Intel HD Audioで音を奏でよう
+layout: blog
 lang: ja
 date: 2020-11-11
 ---

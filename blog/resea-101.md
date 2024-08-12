@@ -1,6 +1,7 @@
 ---
 title: 入門 Reseaオペレーティングシステム
 date: 2021-07-21
+layout: blog
 lang: ja
 ---
 

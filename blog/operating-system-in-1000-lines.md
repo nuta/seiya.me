@@ -1,6 +1,7 @@
 ---
 title: 1,000行で作るオペレーティングシステム
 date: 2023-08-11
+layout: blog
 lang: ja
 ---
 

@@ -1,6 +1,7 @@
 ---
 title: GSoC'19 - Improve LLVM binary utilities
 date: 2019-08-22
+layout: blog
 lang: en
 ---
 

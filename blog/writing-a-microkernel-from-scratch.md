@@ -1,5 +1,6 @@
 ---
 title: CとRustで一から作るマイクロカーネルOS
+layout: blog
 lang: ja
 date: 2019-12-13
 ---

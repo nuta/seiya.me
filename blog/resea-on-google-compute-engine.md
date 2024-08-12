@@ -1,5 +1,6 @@
 ---
 title: Google Compute EngineでReseaを動かす
+layout: blog
 lang: ja
 date: 2020-10-08
 ---

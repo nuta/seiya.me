@@ -1,5 +1,6 @@
 ---
 title: KVMみたいなハイパーバイザを作った
+layout: blog
 lang: ja
 date: 2020-12-23
 ---

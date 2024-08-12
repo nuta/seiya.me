@@ -1,5 +1,6 @@
 ---
 title: Linuxバイナリ互換機能を自作OSカーネルに実装する
+layout: blog
 lang: ja
 date: 2020-05-10
 ---

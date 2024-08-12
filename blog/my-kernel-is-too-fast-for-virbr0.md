@@ -1,5 +1,6 @@
 ---
 title: 「なぜか最初のDHCP DISCOVERに返信がこない」バグ
+layout: blog
 lang: ja
 date: 2021-04-30
 ---
