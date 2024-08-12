@@ -51,6 +51,10 @@ export default async function BlogLayout({ children, meta }) {
           main p + p {
             margin-top: 2.5rem;
           }
+
+          main li + li {
+            margin-top: 1rem;
+          }
         `}</style>
       </head>
       <body className="max-w-screen-sm mx-auto px-4">

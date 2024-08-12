@@ -1,5 +1,6 @@
 export default async function BlogIndexLayout({ children, meta, pages }) {
   const blogPages = pages.filter(({ href }) => href !== "/blog/index");
+  console.log(blogPages.map((page) => page.href));
   return (
     <html>
       <head>
