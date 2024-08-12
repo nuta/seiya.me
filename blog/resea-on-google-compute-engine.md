@@ -1,7 +1,7 @@
 ---
 title: Google Compute EngineでReseaを動かす
 lang: ja
-date: Oct 8, 2020
+date: 2020-10-08
 ---
 
 <Image alt="Google Compute Engine上で動くResea" src="/media/resea-on-google-compute-engine/resea-on-gce.png" width={1856} height={1318} />

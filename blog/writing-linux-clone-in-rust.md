@@ -1,6 +1,6 @@
 ---
 title: Writing a Linux-compatible kernel in Rust
-date: May 19, 2021
+date: 2021
 lang: en
 ---
 

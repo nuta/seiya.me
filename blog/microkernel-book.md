@@ -1,7 +1,7 @@
 ---
 title: 技術書典8 『マイクロカーネルの設計と実装』
 lang: ja
-date: Mar 1, 2020
+date: 2020-05-01
 ---
 
 [@uchan_nos](https://twitter.com/uchan_nos)さんのお誘いを受けて，「マイクロカーネル」をまとめた本を書きました。技術書典 応援祭（[サークル紹介ページはここ](https://techbookfest.org/event/tbf08/circle/5712007521107968)）で頒布します。

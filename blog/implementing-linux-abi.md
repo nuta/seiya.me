@@ -1,7 +1,7 @@
 ---
 title: Linuxバイナリ互換機能を自作OSカーネルに実装する
 lang: ja
-date: May 10, 2020
+date: 2020-05-10
 ---
 
 せっかくのゴールデンウィークなので，自作OSカーネルの[Resea](https://github.com/nuta/resea)にLinux ABIを実装して**Linuxバイナリを無修正で動作させる**ことにした。具体的にはBusyBoxのシェルから`uname(1)`を実行できるところまでが目標。

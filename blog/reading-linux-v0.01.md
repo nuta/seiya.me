@@ -1,6 +1,6 @@
 ---
 title: Exploring the internals of Linux v0.01
-date: Aug 12, 2023
+date: 2023-08-12
 lang: en
 ---
 
