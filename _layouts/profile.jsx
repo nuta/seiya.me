@@ -1,24 +1,29 @@
 export default async function ProfileLayout() {
-    const style = `
-        .gomi {
-            display: none;
-        }
-    `;
-
   return (
     <html>
       <head>
         <meta charSet="utf-8" />
         <title>Seiya Nuta</title>
         <link rel="stylesheet" type="text/css" href="/styles.css" />
-        <style>{style}</style>
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <style>{`
+          body {
+            color: rgba(33, 33, 33, 0.9);
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo,sans-serif;
+          }
+
+
+          .gomi {
+            display: none;
+          }
+        `}</style>
       </head>
-      <body className="px-6">
-        <main className="container max-w-2xl mx-auto py-16 leading-7">
+      <body className="px-4">
+        <main className="container max-w-2xl mx-auto py-8 leading-7">
           <header className="text-center">
             <img
               className="mx-auto rounded-3xl"
-              src="/assets/me.jpg"
+              src="/me.jpg"
               height="112"
               width="100"
               alt="me"
@@ -27,10 +32,6 @@ export default async function ProfileLayout() {
               <h1 className="text-lg font-bold">
                 <span className="inline-block text-3xl select-all">
                   Seiya Nuta
-                </span>
-                <br />
-                <span className="inline-block text-lg py-1">
-                  (<span className="select-all">怒田 晟也</span>)
                 </span>
               </h1>
               <div className="py-5">An operating system kernel enthusiast.</div>
@@ -49,7 +50,6 @@ export default async function ProfileLayout() {
                   &nbsp;・&nbsp;
                   <a href="https://www.linkedin.com/in/seiyanuta">LinkedIn</a>
                 </span>
-                <br />
                 <p className="py-4 font-mono tracking-wider select-all">
                     nuta@<span class="gomi">invisible in real browsers</span>seiya.me
                 </p>
