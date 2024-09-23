@@ -50,6 +50,6 @@ How can we make userspace components secure? My answer is to provide a good user
 
 I chose Rust as the primary programming language for Stelana. Rust enforces me to design a good API, for example, *"who owns this object?"*, *"does this operation need a mutable reference?"*, *"where should I decrement the reference counter?"*, *"where should I acquire a lock?"*, and so on. If I'm doing something wrong, the compiler tells me that it won't work. For me, Rust is C++ with safety belts.
 
-That said, Rust is not good for everything. Async Rust is a good example. It's very carefully designed, but doing things correctly is hard by nature. Have you ever heard of *cancellation safety*? This is why Stelana apps are written in a straightforward event loop + async APIs style (no `async fn`s).
+Rust is a well-designed programming language, but it also introduces a steep learning curve to do things correctly. Async Rust is a good example of this. It's very carefully designed, but is hard by nature. This is why Stelana apps are written in a straightforward event loop + async APIs style (no `async fn`s). I intentionally avoid using such advanced language features. It allows newbies to use Rust as a scripting-ish language with an ergnomic developer experience.
 
-Also, I plan to add a support for GC-based languages like JavaScript for building OS components. They are approachable for beginners, provide memory safety, and would be fast enough for non-critical components.
+In the near future, I plan to add a support for GC-based languages like JavaScript for building OS components. They are approachable for beginners, provide memory safety, and would be fast enough for non-critical components.
