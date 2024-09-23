@@ -8,6 +8,7 @@ export default async function ProfileLayout() {
         <meta content="width=device-width, initial-scale=1" name="viewport" />
         <meta property="twitter:card" content="summary" />
         <meta property="twitter:title" content="Seiya Nuta" />
+        <meta property="og:title" content="Seiya Nuta" />
         <meta property="og:site_name" content="Seiya Nuta" />
         <style>{`
           .gomi {

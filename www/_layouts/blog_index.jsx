@@ -15,6 +15,7 @@ export default async function BlogIndexLayout({ children, meta, pages }) {
         <meta content="width=device-width, initial-scale=1" name="viewport" />
         <meta property="twitter:card" content="summary" />
         <meta property="twitter:title" content="Seiya's Blog" />
+        <meta property="og:title" content="Seiya's Blog" />
         <meta property="og:site_name" content="Seiya's Blog" />
         <link rel="stylesheet" type="text/css" href="/styles.css" />
       </head>
