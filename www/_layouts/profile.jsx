@@ -6,6 +6,9 @@ export default async function ProfileLayout() {
         <title>Seiya Nuta</title>
         <link rel="stylesheet" type="text/css" href="/styles.css" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <meta property="twitter:card" content="summary" />
+        <meta property="twitter:title" content="Seiya Nuta" />
+        <meta property="og:site_name" content="Seiya Nuta" />
         <style>{`
           .gomi {
             display: none;
