@@ -5,9 +5,9 @@ layout: blog
 lang: en
 ---
 
-I have been working on a new microkernel-based OS called **[Stelana](https://stelana.org)**. The goal is not a hobby OS, but a general-purpose production-ready OS like Linux and FreeBSD. It's still in the early stage, it's already getting good shape - The [website](https://stelana.org) is served by Stelana on Linux QEMU!
+I have been working on a new microkernel-based OS called **[Stelana](https://stelana.org)**. The goal is not a hobby OS, but a general-purpose production-ready OS like Linux and FreeBSD. It's still in the early stages, but it's already taking good shape - The [website](https://stelana.org) is served by Stelana on Linux QEMU!
 
-If knows microkernels, you might think it's a crazy idea. Microkernels are very cool technology, but it is also known for their poor performance, poor feature set, and poor usability. However, it's 2024. Things have changed a lot. Containerized deployments managed by Kubernetes. Microservices everywhere. Web browsers now run C/Rust code in WebAssembly. Monothlic kernels desire to be more dynamic with eBPF. Our software stack has been evolving rapidly! ... but where are microkernels?
+If you know microkernels, you might think it's a crazy idea. Microkernel is a very cool technology, but it is also known for their poor performance, poor feature set, and poor usability. However, it's 2024. Things have changed a lot. Containerized deployments managed by Kubernetes. Microservices everywhere. Web browsers now run C/Rust code in WebAssembly. Monolithic kernels desire to be more dynamic with eBPF. Our software stack has been evolving rapidly! ... but where are microkernels?
 
 It's time to try building a new cool general-purpose microkernel OS, with modern technologies. Why? Of course, just for fun! OS defines how you use your computer, or creates a world. It's not only building an alternative, but also rediscovering how UNIX and Windows are nicely designed. Let's satisfy our curiosity!
 
@@ -21,11 +21,11 @@ Why? Because as the responsibilities of the kernel are reduced, the user space b
 
 This is why I take the userspace-first approach. OS development should be fun! To make it fun, we need a good developer experience: intuitive APIs, a handy toolchain, and a good documentation. In the userspace-first principle, the microkernel is not the center of the universe anymore. It is the behind-the-scenes support to make userspace components shine.
 
-This means the microkernel sometimes need compromises to make userspace development easier. Make things work first, and then iterate to make it better. [Worse is better](https://www.dreamsongs.com/WIB.html).
+This means the microkernel sometimes needs compromises to make userspace development easier. Make things work first, and then iterate to make it better. [Worse is better](https://www.dreamsongs.com/WIB.html).
 
 ## Performance: process is just one of many isolation mechanisms
 
-In the traditional microkernel design, *"process"* is how it isolates components. It was main reason why microkernels were slow: inter-process communication (IPC) is much slower than function calls.
+In the traditional microkernel design, *"process"* is how it isolates components. It was the main reason why microkernels were slow: inter-process communication (IPC) is much slower than function calls.
 
 In 2024, we have many more isolation mechanisms. The most promising one is language-based isolation, especially Rust. It is less secure than process isolation (`unsafe` can break the isolation), but enables a performant *good-enough* isolation. With language-based isolation, IPC could be optimized to be nearly as fast as indirect function calls.
 
@@ -39,7 +39,7 @@ How can we make userspace components secure? My answer is to provide a good user
 
 ## Stelana - A modern general-purpose microkernel OS
 
-**Stelana** *(STE-LLA-NA - "stellar" + "-na")* is a
+**Stelana** *(STE-LLA-NA - "stellar" + "-na")* is
 
 - A new microkernel written in Rust (single kernel stack design)
 - Easy-to-use intuitive Rust API
@@ -48,8 +48,8 @@ How can we make userspace components secure? My answer is to provide a good user
 
 ## Rust + GC-based languages
 
-I chose Rust as the primary programming language for Stelana. Rust enforces me to design a good API, for example, *"who owns this object?"*, *"does this operation needs a mutable reference?"*, *"where should I decrement the reference counter?"*, *"where should I acquire a lock?"*, and so on. If I am doing wrong, compiler tells me that it won't work. For me, Rust is C++ with safety belts.
+I chose Rust as the primary programming language for Stelana. Rust enforces me to design a good API, for example, *"who owns this object?"*, *"does this operation need a mutable reference?"*, *"where should I decrement the reference counter?"*, *"where should I acquire a lock?"*, and so on. If I'm doing something wrong, the compiler tells me that it won't work. For me, Rust is C++ with safety belts.
 
 That said, Rust is not good for everything. Async Rust is a good example. It's very carefully designed, but doing things correctly is hard by nature. Have you ever heard of *cancellation safety*? This is why Stelana apps are written in a straightforward event loop + async APIs style (no `async fn`s).
 
-Also I plan to add a support for GC-based languages like JavaScript for building OS components. They are approachable for beginners, provides memory safety, and would be fast enough for non-critical components.
+Also, I plan to add a support for GC-based languages like JavaScript for building OS components. They are approachable for beginners, provide memory safety, and would be fast enough for non-critical components.
