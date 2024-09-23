@@ -39,6 +39,8 @@ How can we make userspace components secure? My answer is to provide a good user
 
 ## Stelana - A modern general-purpose microkernel OS
 
+TODO:
+
 **Stelana** *(STE-LLA-NA - "stellar" + "-na")* is
 
 - A new microkernel written in Rust (single kernel stack design)
@@ -46,10 +48,14 @@ How can we make userspace components secure? My answer is to provide a good user
 - Declarative userspace management (like systemd/Kubernetes)
 - Kernel/userspace hybrid apps
 
-## Rust + GC-based languages
+## Why Rust?
 
 I chose Rust as the primary programming language for Stelana. Rust enforces me to design a good API, for example, *"who owns this object?"*, *"does this operation need a mutable reference?"*, *"where should I decrement the reference counter?"*, *"where should I acquire a lock?"*, and so on. If I'm doing something wrong, the compiler tells me that it won't work. For me, Rust is C++ with safety belts.
 
-Rust is a well-designed programming language, but it also introduces a steep learning curve to do things correctly. Async Rust is a good example of this. It's very carefully designed, but is hard by nature. This is why Stelana apps are written in a straightforward event loop + async APIs style (no `async fn`s). I intentionally avoid using such advanced language features. It allows newbies to use Rust as a scripting-ish language with an ergnomic developer experience.
+Rust is a well-designed programming language, but it needs to introduce some advanced concepts to do things correctly. Async Rust is a good example of this. It's very carefully designed, but is hard by nature. This is why Stelana apps are written in a straightforward event loop + non-blocking APIs style. I intentionally avoid using such advanced language features so that newbies can use Rust as a scripting-ish language with an ergnomic developer experience.
 
-In the near future, I plan to add a support for GC-based languages like JavaScript for building OS components. They are approachable for beginners, provide memory safety, and would be fast enough for non-critical components.
+In the near future, I plan to add a support for GC-based languages like JavaScript. They are approachable for beginners, provide memory safety, and would be fast enough for non-critical OS components.
+
+## How to try Stelana
+
+TODO:
