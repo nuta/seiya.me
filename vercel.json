@@ -1,6 +1,6 @@
 {
   "framework": null,
-  "buildCommand": "docship",
+  "buildCommand": "docship --indir www",
   "installCommand": "npm i -g docship",
   "outputDirectory": "output",
   "cleanUrls": true,
