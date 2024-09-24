@@ -50,11 +50,11 @@ TODO:
 
 ## Why Rust?
 
-I chose Rust as the primary programming language for Stelana. Rust enforces me to design a good API, for example, *"who owns this object?"*, *"does this operation need a mutable reference?"*, *"where should I decrement the reference counter?"*, *"where should I acquire a lock?"*, and so on. If I'm doing something wrong, the compiler tells me that it won't work. For me, Rust is C++ with safety belts.
+I chose Rust as the primary programming language for Stelana. Rust enforces me to clarify implementation assumptions, for example, *"who owns this object?"*, *"where should I acquire the lock?"*, *"does this operation need a mutable reference?"*, and *"where should I increment the reference counter?"*. Rust types become great docs. If I'm doing something wrong, the compiler tells me that it won't work. For me, Rust is C++ with safety belts.
 
-Rust is a well-designed programming language, but it needs to introduce some advanced concepts to do things correctly. Async Rust is a good example of this. It's very carefully designed, but is hard by nature. This is why Stelana apps are written in a straightforward event loop + non-blocking APIs style. I intentionally avoid using such advanced language features so that newbies can use Rust as a scripting-ish language with an ergnomic developer experience.
+Rust is a well-designed programming language, however, it needs to introduce some advanced concepts to do things correctly. Async Rust is a good example of this. It's carefully designed, but is hard to comprehend by nature. This is why Stelana apps are written in a straightforward event loop + non-blocking APIs style. I intentionally avoid using such advanced language features so that newbies can use Rust as a scripting-ish language with an ergnomic developer experience.
 
-In the near future, I plan to add a support for GC-based languages like JavaScript. They are approachable for beginners, provide memory safety, and would be fast enough for non-critical OS components.
+In the near future, I plan to add a support for GC-based languages like JavaScript as well. They are approachable for beginners, provide memory safety, and would be fast enough for non-critical OS components.
 
 ## How to try Stelana
 
