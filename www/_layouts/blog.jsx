@@ -9,7 +9,6 @@ export default async function Blog({ children, meta, pages }) {
         <meta property="twitter:title" content={meta.title} />
         <meta property="og:title" content={meta.title} />
         <meta property="og:site_name" content="Seiya's Blog" />
-        <link rel="stylesheet" type="text/css" href="/styles.css" />
       </head>
       <body className="mx-auto max-w-2xl w-full py-8 px-4">
         <header className="mb-8 pb-1 border-b border-gray-200">

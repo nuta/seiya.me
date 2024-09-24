@@ -10,14 +10,13 @@ export default async function BlogIndexLayout({ children, meta, pages }) {
   return (
     <html>
       <head>
-        <title>{meta.title} - Seiya Nuta</title>
+        <title>Seiya's Blog</title>
         <meta charset="utf-8" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />
         <meta property="twitter:card" content="summary" />
         <meta property="twitter:title" content="Seiya's Blog" />
         <meta property="og:title" content="Seiya's Blog" />
         <meta property="og:site_name" content="Seiya's Blog" />
-        <link rel="stylesheet" type="text/css" href="/styles.css" />
       </head>
       <body className="mx-auto max-w-3xl w-full py-8 px-4">
         <header className="mb-8 pb-1 border-b border-gray-200">

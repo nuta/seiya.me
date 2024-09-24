@@ -4,17 +4,11 @@ export default async function ProfileLayout() {
       <head>
         <meta charSet="utf-8" />
         <title>Seiya Nuta</title>
-        <link rel="stylesheet" type="text/css" href="/styles.css" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />
         <meta property="twitter:card" content="summary" />
         <meta property="twitter:title" content="Seiya Nuta" />
         <meta property="og:title" content="Seiya Nuta" />
         <meta property="og:site_name" content="Seiya Nuta" />
-        <style>{`
-          .gomi {
-            display: none;
-          }
-        `}</style>
       </head>
       <body className="px-4">
         <main className="container max-w-2xl mx-auto py-8 leading-7">
@@ -47,7 +41,7 @@ export default async function ProfileLayout() {
                   <a href="https://www.linkedin.com/in/seiyanuta">LinkedIn</a>
                 </span>
                 <p className="py-1 font-mono tracking-wider select-all">
-                    nuta@<span class="gomi">invisible in real browsers</span>seiya.me
+                    nuta@<span class="hidden">invisible in real browsers</span>seiya.me
                 </p>
               </div>
             </div>
