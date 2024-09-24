@@ -10,7 +10,7 @@ export default async function BlogIndexLayout({ children, meta, pages }) {
   return (
     <html>
       <head>
-        <title>{meta.title} - Seiya Nuta</title>
+        <title>Seiya's Blog</title>
         <meta charset="utf-8" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />
         <meta property="twitter:card" content="summary" />
