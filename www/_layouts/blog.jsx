@@ -2,7 +2,7 @@ export default async function Blog({ children, meta, pages }) {
   return (
     <html>
       <head>
-        <title>{meta.title} - Seiya Nuta</title>
+        <title>{meta.title}</title>
         <meta charset="utf-8" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />
         <meta property="twitter:card" content="summary" />
