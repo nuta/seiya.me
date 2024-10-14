@@ -1,4 +1,5 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "buildCommand": "docship --config docship.mjs --indir www",
   "installCommand": "npm i -g docship",
@@ -7,5 +8,11 @@
   "trailingSlash": false,
   "github": {
     "silent": true
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/1000os(.*)",
+      "destination": "https://operating-system-in-1000-lines.vercel.app$1"
+    }
+  ]
 }
