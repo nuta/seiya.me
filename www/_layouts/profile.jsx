@@ -41,7 +41,7 @@ export default async function ProfileLayout() {
                   <a href="https://www.linkedin.com/in/seiyanuta">LinkedIn</a>
                 </span>
                 <p className="py-1 font-mono tracking-wider select-all">
-                    nuta@<span class="hidden">invisible in real browsers</span>seiya.me
+                  nuta@<span class="hidden">invisible in real browsers</span>seiya.me
                 </p>
               </div>
             </div>
