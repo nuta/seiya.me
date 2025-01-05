@@ -1,6 +1,6 @@
 ---
 title: Writing an OS in 1,000 Lines
-date: 2024-12-9
+date: 2024-12-09
 layout: blog
 lang: en
 ---
