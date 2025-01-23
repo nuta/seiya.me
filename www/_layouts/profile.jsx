@@ -52,7 +52,7 @@ export default async function ProfileLayout() {
             <ul className="list-disc mt-4 pl-4">
               <li className="mt-4">
                 <a
-                  className="font-bold italic"
+                  className="font-bold"
                   href="https://www.hanmoto.com/bd/isbn/9784798068718"
                 >
                   &ldquo;Design and Implementation of Microkernels&rdquo;
@@ -62,8 +62,18 @@ export default async function ProfileLayout() {
                 and Mach) as well as an educational microkernel-based OS (
                 <a href="https://github.com/nuta/microkernel-book">HinaOS</a>).
                 It covers concepts of operating systems, how microkernels make
-                them happen, and recent intriguing research topics. Written in
-                Japanese.
+                them happen, and recent intriguing research topics.
+              </li>
+              <li>
+                <a
+                  className="font-bold"
+                  href="https://operating-system-in-1000-lines.vercel.app/"
+                >
+                  &ldquo;Operating System in 1,000 Lines&rdquo;
+                </a>
+                &nbsp;-&nbsp; A beginner's guide to implement context switching,
+                paging, system calls, user mode, virtio-blk driver, file system,
+                and shell in 1,000 lines of C.
               </li>
             </ul>
           </section>
@@ -71,6 +81,13 @@ export default async function ProfileLayout() {
           <section className="mt-6">
             <h1 className="text-xl font-bold">Projects</h1>
             <ul className="list-disc mt-4 pl-4">
+              <li className="mt-4">
+                <a className="font-bold" href="https://starina.dev">
+                  Starina
+                </a>
+                &nbsp;-&nbsp; An experimental operating system aiming to be a production-ready,
+                general-purpose, and developer-friendly OS with a microkernel architecture.
+              </li>
               <li className="mt-4">
                 <a className="font-bold" href="https://github.com/nuta/resea">
                   Resea
@@ -89,15 +106,6 @@ export default async function ProfileLayout() {
                 compatibility written from scratch in Rust. I&apos;ve
                 implemented basic kernel features like fork/execve, signals,
                 mmap, pipe, poll, tty/pty, tmpfs, UDP/TCP sockets, etc.
-              </li>
-              <li className="mt-4">
-                <a className="font-bold" href="https://github.com/nuta/nsh">
-                  nsh
-                </a>
-                &nbsp;-&nbsp; A almost-POSIX-compliant command-line shell
-                written in Rust featuring out-of-the-box features just like fish
-                shell. It aims to be drop-in replacement for Bash as an
-                interactive shell.
               </li>
             </ul>
           </section>
