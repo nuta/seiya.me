@@ -1,0 +1,173 @@
+---
+title: A Diary of Writing a RISC-V Hypervisor
+date: 2025-05-05
+---
+
+## Entering the guest
+
+but instruction page faults
+
+
+## First ecall
+
+`PTE_U`
+
+```rust
+const BOOT_CODE: &[u8] = &[
+    0x73, 0x00, 0x00, 0x00, // ecall
+];
+```
+
+## Hello World from guest!
+
+```
+.section .text
+.global _start
+
+_start:
+    li a0, 'H'
+    li a7, 1
+    ecall
+
+    li a0, 'i'
+    li a7, 1
+    ecall
+
+    li a0, '!'
+    li a7, 1
+    ecall
+
+    li a0, '\n'
+    li a7, 1
+    ecall
+
+    unimp
+```
+
+```
+$ clang --target=riscv64 -march=rv64g -nostdlib -Wl,-Ttext=0x80200000 guest.S -o guest.elf
+$ llvm-objcopy -O binary guest.elf guest.bin
+```
+
+## Building Linux
+
+##
+
+hedeleg - Linux uses stvec as a hack
+
+## Device Tree
+
+```
+
+```
+
+```
+$ gobjdump -d linux/vmlinux | grep -A 5 801cace8 | head
+ffffffff801cace8 <__pi_fdt32_ld>:
+ffffffff801cace8:	00054783          	lbu	a5,0(a0)  <-- null deferecence here!
+ffffffff801cacec:	00154703          	lbu	a4,1(a0)
+ffffffff801cacf0:	0187979b          	slliw	a5,a5,0x18
+```
+
+## Debugging page faults after enabling MMU
+
+```
+epc:0xffffffff80005354, tval:0x0000000000000000, desc=hypervisor_ecall
+epc:0x0000000080228144, tval:0xffffffff80263dc8, desc=store_page_fault
+epc:0x0000000080227694, tval:0x00000000000000ab, desc=store_page_fault
+epc:0x0000000080228144, tval:0xffffffff80263b78, desc=store_page_fault
+epc:0x0000000080227694, tval:0x00000000000000ab, desc=store_page_fault
+epc:0x0000000080228144, tval:0xffffffff80263928, desc=store_page_fault
+epc:0x0000000080227694, tval:0x00000000000000ab, desc=store_page_fault
+epc:0x0000000080228144, tval:0xffffffff802636d8, desc=store_page_fault
+```
+
+sp - do not forget to set sp register (or check your kernel's pc too)
+
+## `rdtime` support
+
+> hcounteren register is clear, attempts to read the cycle, time, instret, or hpmcounter n register while V=1 will cause a virtual-instruction exception
+
+`hcounteren`, Hypervisor Counter-Enable Register, needs to be set to enable `rdtime` in guest.
+
+```rust
+hcounteren |= 0xffff_ffff;
+```
+
+
+### `wfi`
+
+```
+ffffffff80170dba <arch_cpu_idle>:
+ffffffff80170dba:   0ff0000f            fence
+ffffffff80170dbe:   10500073            wfi
+ffffffff80170dc2:   8082                ret
+```
+
+`VTW=1` in `hstatus`
+
+## `sbi_set_timer`
+
+`hideleg`
+
+## Sstc extension
+
+
+## Virtio-fs
+
+## So how can I use the hypervisor?
+
+```rust
+use starina::lx::Command;
+
+let file_ch = fs_server.open("/...").await;
+
+let stdin = Writer::from("hello");
+let stdout = Reader::from(|buf| {
+  println!("stdout: {}", buf);
+});
+
+let cmd =
+    Command::new("cowsay")
+        .arg("/tmp/hello.txt")
+        .stdin(stdin)
+        .stdout(stdout)
+        // Connect to Starina's FS
+        .mount("/tmp/hello.txt", file_ch);
+        // Export a TCP port
+        .expose(Port::Tcp {
+          host: 80,  // Port in Starina
+          guest: 80, // Port in Linux
+        });
+
+// Boot a lightweight Linux VM and spawn cowsay(1).
+cmd.spawn();
+```
+
+## Fun Tips
+
+### RISC-V extensions are more like "patches"
+
+That is, they may change the behavior. Even if you don't explicitly enable them.
+
+https://github.com/riscv-software-src/riscv-unified-db
+
+### GDB can debug both hypervisor/guest worlds!
+
+Starina supports Unikernel-like mode, where the microkernel and apps are built into a single ELF executable. This is not only for performance, but also for debugging.
+
+Here's a `gdbinit` script which enabled me to watch VMM, hypervisor in Starina kernel, and the Linux kernel in guest:
+
+```
+# Load Starina (hypervisor's) debug info
+file build/kernel/debug/kernel
+
+# Load Linux (guest's) debug info
+add-symbol-file apps/servers/lx/linux/vmlinux
+```
+
+And look! You're seeing the guest's kernel stack trace!
+
+![]
+
+BTW, this is why I haven't yet implemented stack traces in Starina: you just need to attach the GDB and type `bt`.
