@@ -1,17 +1,27 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { getFrontmatter } from "next-mdx-remote-client/utils";
+import { evaluate } from "next-mdx-remote-client/rsc";
+import { JSX } from "react";
+import rehypePrettyCode from "rehype-pretty-code";
+export type Slug = string;
 
 export interface BlogPost {
-    title: string;
-    date: string;
     slug: string;
-    mdx: string;
+    frontmatter: Frontmatter;
+    mdx: JSX.Element;
 }
 
-let cachedPosts: BlogPost[] | null = null;    
+export type Frontmatter = {
+    title: string;
+    date: string;
+}
 
-export async function getBlogPosts(): Promise<BlogPost[]> {
+export type Scope = {
+}
+
+let cachedPosts: Record<Slug, BlogPost> | null = null;    
+
+export async function getBlogPosts(): Promise<Record<Slug, BlogPost>> {
     if (!cachedPosts) {
         cachedPosts = await doGetBlogPosts();
     }
@@ -21,7 +31,7 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost> {
     const posts = await getBlogPosts();
-    const post = posts.find((post) => post.slug === slug);
+    const post = posts[slug];
     if (!post) {
         throw new Error(`Blog post ${slug} not found`);
     }
@@ -29,31 +39,40 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost> {
     return post;
 }
 
-async function doGetBlogPosts(): Promise<BlogPost[]> {
+async function doGetBlogPosts(): Promise<Record<Slug, BlogPost>> {
     const files = await fs.readdir(path.join(process.cwd(), "blog"));
-    const posts: BlogPost[] = [];
+    const posts: Record<Slug, BlogPost> = {};
     for (const file of files) {
-        const content = await fs.readFile(path.join(process.cwd(), "blog", file), "utf-8");
+        const source = await fs.readFile(path.join(process.cwd(), "blog", file), "utf-8");
         if (!file.endsWith(".mdx") && !file.endsWith(".md")) {
             continue;
         }
 
-        const { frontmatter, strippedSource } = await getFrontmatter(content);
+        const { content, frontmatter, scope, error } = await evaluate<Frontmatter, Scope>({
+            source,
+            options: {
+                parseFrontmatter: true,
+                mdxOptions: {
+                    rehypePlugins: [
+                        [rehypePrettyCode, {
+                            theme: "github-dark",
+                        }]
+                    ]
+                }
+            },
+            components: {},
+          });
 
-        if (typeof frontmatter.title !== "string") {
-            throw new Error(`Blog post ${file} has no title`);
-        }
-
-        if (typeof frontmatter.date !== "string") {
-            throw new Error(`Blog post ${file} has no date`);
-        }
-
-        posts.push({
-            title: frontmatter.title,
-            date: frontmatter.date,
-            slug: file.replace(".mdx", "").replace(".md", ""),
-            mdx: strippedSource,
-        });
+          if (error) {
+            throw new Error(`Error evaluating blog post ${file}: ${error}`);
+          }
+        
+        const slug = file.replace(/\..*$/, "");
+        posts[slug] = {
+            slug,
+            frontmatter,
+            mdx: content,
+        };
     }
 
     return posts;
