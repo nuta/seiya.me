@@ -3,12 +3,14 @@ import path from "node:path";
 import { evaluate } from "next-mdx-remote-client/rsc";
 import { JSX } from "react";
 import rehypePrettyCode from "rehype-pretty-code";
+
 export type Slug = string;
 
 export interface BlogPost {
-    slug: string;
+    slug: Slug;
     frontmatter: Frontmatter;
     mdx: JSX.Element;
+    scope: Scope;
 }
 
 export type Frontmatter = {
@@ -72,6 +74,7 @@ async function doGetBlogPosts(): Promise<Record<Slug, BlogPost>> {
             slug,
             frontmatter,
             mdx: content,
+            scope
         };
     }
 
