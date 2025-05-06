@@ -2,8 +2,15 @@ import Image from "next/image";
 import MyPicture from "./me.jpg";
 import Link from "next/link";
 import "./home.css";
+import { getBlogPosts } from "@/lib/blog";
 
-export default function Home() {
+function toDateString(date: string) {
+  return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+}
+
+export default async function Home() {
+  const posts = Object.values(await getBlogPosts()).sort((a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime());
+
   return (
     <div className="font-['Times']">
       <header className="flex flex-row items-center">
@@ -25,8 +32,8 @@ export default function Home() {
         </div>
       </header>
       <main className="my-12">
-        <section>
-          <h2 className="text-2xl font-bold">Projects</h2>
+        <section className="mt-12">
+          <h2 className="mb-2 text-2xl font-bold">Projects</h2>
           <ul>
             <li>
               <Link href="https://github.com/starina-os/starina" prefetch={false}>Starina operating system</Link>
@@ -34,19 +41,25 @@ export default function Home() {
           </ul>
         </section>
 
-        <section>
-          <h2 className="text-2xl font-bold">Publications</h2>
+        <section className="mt-12">
+          <h2 className="mb-2 text-2xl font-bold">Publications</h2>
           <ul>
             <li>
             </li>
           </ul>
         </section>
 
-        <section>
-          <h2 className="text-2xl font-bold">Posts</h2>
-          <ul>
-            <li>
-            </li>
+        <section className="mt-12">
+          <h2 className="mb-2 text-2xl font-bold">Posts</h2>
+          <ul className="list-none">
+            {posts.map((post) => (
+              <li key={post.slug} className="mb-1 flex flex-col md:flex-row">
+                <span className="text-sm text-gray-700 mr-2 tabular-nums">
+                  {toDateString(post.frontmatter.date)}
+                </span>
+                <Link href={`/blog/${post.slug}`}>{post.frontmatter.title}</Link>
+              </li>
+            ))}
           </ul>
         </section>
       </main>
