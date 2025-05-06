@@ -8,6 +8,17 @@ export const metadata: Metadata = {
   title: "Seiya Nuta",
 };
 
+const navItems = [
+  {
+    label: "Home",
+    href: "/",
+  },
+  // {
+  //   label: "GitHub",
+  //   href: "https://github.com/nuta",
+  // },
+]
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -15,16 +26,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="max-w-2xl mx-4 my-12 lg:mx-auto">
+      <body className="max-w-2xl mx-4 mt-8 lg:mx-auto">
         <main>
           {children}
         </main>
-        <footer className="text-center mt-12">
-          &mdash; <br />
-          Written by <Link href="/">Seiya Nuta</Link>
-          <br />
-          CC BY 4.0
-        </footer>
         <Analytics />
         <SpeedInsights />
       </body>

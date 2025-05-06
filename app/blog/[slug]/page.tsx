@@ -1,5 +1,7 @@
+import Navbar from "@/app/components/navbar";
 import { getBlogPosts, getBlogPostBySlug } from "@/lib/blog";
 import type { Metadata } from 'next';
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 
@@ -35,10 +37,22 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
 
     return (
         <article>
-            <h1 className="text-2xl font-bold mb-12">{post.frontmatter.title}</h1>
+            <Navbar />
+            <header className="mb-12">
+                <h1 className="text-2xl font-bold">{post.frontmatter.title}</h1>
+                <p className="text-sm text-gray-500 mt-2">
+                    {post.frontmatter.date}
+                </p>
+            </header>
             <div className="prose prose-neutral lg:prose-lg">
                 {post.mdx}
             </div>
+            <footer className="text-center mt-12 mb-8">
+            &mdash; <br />
+            Written by <Link href="/">Seiya Nuta</Link>
+            <br />
+            CC BY 4.0
+            </footer>
         </article>
     )
 }
