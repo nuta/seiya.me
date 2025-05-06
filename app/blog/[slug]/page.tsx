@@ -34,9 +34,11 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
     }
 
     return (
-        <div className="prose">
-            <h1>{post.frontmatter.title}</h1>
-            {post.mdx}
-        </div>
+        <article>
+            <h1 className="text-2xl font-bold mb-12">{post.frontmatter.title}</h1>
+            <div className="prose prose-neutral lg:prose-lg">
+                {post.mdx}
+            </div>
+        </article>
     )
 }
