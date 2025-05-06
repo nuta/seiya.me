@@ -2,8 +2,12 @@ import Link from "next/link"
 
 const navItems = [
     {
-        label: "Home",
+        label: "home",
         href: "/",
+    },
+    {
+        label: "github",
+        href: "https://github.com/nuta",
     },
     
 ]
@@ -14,7 +18,7 @@ export default function Navbar() {
           className="flex flex-row items-start mb-8"
         >
           {navItems.map((item) => (
-            <Link key={item.href} href={item.href} prefetch={false} className="py-1 pr-4">
+            <Link key={item.href} href={item.href} prefetch={false} className="py-1 pr-6">
               {item.label}
             </Link>
           ))}

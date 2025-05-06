@@ -1,4 +1,4 @@
-import Navbar from "@/app/components/navbar";
+import NavBar from "@/app/components/NavBar";
 import { getBlogPosts, getBlogPostBySlug } from "@/lib/blog";
 import type { Metadata } from 'next';
 import Link from "next/link";
@@ -37,7 +37,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
 
     return (
         <article>
-            <Navbar />
+            <NavBar />
             <header className="mb-12">
                 <h1 className="text-2xl font-bold">{post.frontmatter.title}</h1>
                 <p className="text-sm text-gray-500 mt-2">
