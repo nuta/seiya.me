@@ -31,11 +31,11 @@ export async function getBlogPosts(): Promise<Record<Slug, BlogPost>> {
     return cachedPosts;
 }
 
-export async function getBlogPostBySlug(slug: string): Promise<BlogPost> {
+export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
     const posts = await getBlogPosts();
     const post = posts[slug];
     if (!post) {
-        throw new Error(`Blog post ${slug} not found`);
+        return null;
     }
 
     return post;

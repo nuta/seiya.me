@@ -113,6 +113,13 @@ ffffffff80170dc2:   8082                ret
 ## Sstc extension
 
 
+## MMIO support
+
+> A guest physical address written to htval is shifted right by 2 bits to accommodate addresses
+wider than the current XLEN
+
+> htinst could be compressed instruction
+
 ## Virtio-fs
 
 ## So how can I use the hypervisor?
