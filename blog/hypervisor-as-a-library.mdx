@@ -11,7 +11,7 @@ Before we dive into the topic, let me introduce you my new friend `catsay`, a si
 
 Cute! ... but it's not the point. What makes this screenshot very exciting is that it is a Linux lightweight virtual machine running on [Starina operating system](https://starina.dev/)!
 
-That said, writing a hypervisor is not that hard. The hardest part is to design how you interact with hypervisor, or design the API of the hypervisor. Starina needs a seamless integration with Linux.
+That said, I'm not here to talk about how hard it is to write a hypervisor. In fact, it's not that hard. The hardest part is to design how you interact with hypervisor, or design the API of the hypervisor. Starina needs a seamless integration with Linux.
 
 In this post, I'd share an interesting pattern I found *"hypervisor as a library"*.
 
@@ -169,9 +169,11 @@ Thanks to the hypervisor-as-a-library design, you can pass a Rust object (`YourV
 
 Virtual machines are often considered slow and heavy, but they are not necessarily so. The guest Linux runs natively without VMM's intervention most of time. VMM's job is mostly to emulate few virtio devices, and it's still very simple: virtio is just a command queue with few fancy features.
 
-Starina Linux image is currently embedded into each applicaiton for the time being, but is only 6.7 MB. Also, while it takes 2 seconds in QEMU software emulation to boot the kernel and run `catsay`, I'm pretty sure it can be optimized to less than 100ms (in QEMU), or even less than 10ms with VM snapshotting (again, in QEMU software emulation!).
+Starina Linux image is currently embedded into each applicaiton for the time being, but is only 6.7 MB (64-bit RISC-V). The minimal memory space required is around 32MB. It takes 2 seconds in QEMU software emulation to boot the kernel and run `catsay`. I'm pretty sure it can be optimized to less than 100ms (in QEMU), or even less than 10ms with VM snapshotting (again, in QEMU software emulation!).
 
-Optimizing the boot time is not priority as I gotta implement more other features, but I'm very optimistic about its practicality. So the answer is, yes, I think it's a good idea!
+You might wonder why it doesn't share a single VM instance across multiple applications. That of course makes sense to me, but with VM snapshots, hypervisor-as-a-library has a potential to start your Linux apps faster even than the native Linux environment, and is easier to maintain compared to [Checkpoint/Restore In Userspace](https://criu.org/Main_Page).
+
+I haven't tried (famous last words), but I'm very optimistic about its practicality. So the answer is, yes, I think it's a good idea!
 
 ## What's next?
 
@@ -185,6 +187,8 @@ starina_linux::Command::new("node")
   .env("NODE_ENV", "production")
   // What if Starina supports the container images out of the box?
   .image("docker.io/library/node:24-alpine")
+  // Use VM state caching to start faster (if it's safe to do so).
+  .snapshot(true)
   // Pass a channel connected to Starina FS server.
   .mount("/app", dir_ch)
   // Export a TCP port to the Starina TCP/IP server.
