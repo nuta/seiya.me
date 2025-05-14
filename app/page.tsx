@@ -63,6 +63,6 @@ export default async function Home() {
           </ul>
         </section>
       </main>
-   </div>
+    </div>
   );
 }

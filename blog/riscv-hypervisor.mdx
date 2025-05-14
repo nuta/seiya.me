@@ -18,6 +18,8 @@ const BOOT_CODE: &[u8] = &[
 ];
 ```
 
+![first ecall](/images/riscv-hypervisor/first-ecall.png)
+
 ## Hello World from guest!
 
 ```
@@ -48,6 +50,8 @@ _start:
 $ clang --target=riscv64 -march=rv64g -nostdlib -Wl,-Ttext=0x80200000 guest.S -o guest.elf
 $ llvm-objcopy -O binary guest.elf guest.bin
 ```
+
+![minimal hello world](/images/riscv-hypervisor/minimal-hello-world.png)
 
 ## Building Linux
 
@@ -122,6 +126,8 @@ wider than the current XLEN
 
 ## Virtio-fs
 
+![virtio-fs](/images/riscv-hypervisor/hello-from-virtio-fs.png)
+
 ## So how can I use the hypervisor?
 
 ```rust
@@ -175,6 +181,6 @@ add-symbol-file apps/servers/lx/linux/vmlinux
 
 And look! You're seeing the guest's kernel stack trace!
 
-![]
+![gdb](/images/riscv-hypervisor/you-can-attach-gdb.png)
 
 BTW, this is why I haven't yet implemented stack traces in Starina: you just need to attach the GDB and type `bt`.

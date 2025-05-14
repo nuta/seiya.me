@@ -1,8 +1,12 @@
+
+import { readFileSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { evaluate } from "next-mdx-remote-client/rsc";
 import { JSX } from "react";
 import rehypePrettyCode from "rehype-pretty-code";
+import Image from "next/image";
+import sizeOf from "image-size";
 
 export type Slug = string;
 
@@ -21,7 +25,7 @@ export type Frontmatter = {
 export type Scope = {
 }
 
-let cachedPosts: Record<Slug, BlogPost> | null = null;    
+let cachedPosts: Record<Slug, BlogPost> | null = null;
 
 export async function getBlogPosts(): Promise<Record<Slug, BlogPost>> {
     if (!cachedPosts) {
@@ -62,13 +66,25 @@ async function doGetBlogPosts(): Promise<Record<Slug, BlogPost>> {
                     ]
                 }
             },
-            components: {},
-          });
+            components: {
+                img: (props) => {
+                    if (!props.src.startsWith("/")) {
+                        throw new Error(`Image src must start with /: ${props.src}`);
+                    }
 
-          if (error) {
+                    const imagePath = path.join(process.cwd(), "public", props.src);
+                    const image = readFileSync(imagePath);
+                    const size = sizeOf(image);
+
+                    return <Image src={`${props.src}`} alt={props.alt} width={size.width} height={size.height} />;
+                },
+            },
+        });
+
+        if (error) {
             throw new Error(`Error evaluating blog post ${file}: ${error}`);
-          }
-        
+        }
+
         const slug = file.replace(/\..*$/, "");
         posts[slug] = {
             slug,
