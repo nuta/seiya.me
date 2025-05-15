@@ -1,11 +1,19 @@
+import { BlogPost, getBlogPostBySlug } from "@/lib/blog"
 import { ImageResponse } from "next/og"
 
+export async function GET(request: Request, { params }: { params: { slug: string } }) {
+    let post: BlogPost;
+    try {
+        post = await getBlogPostBySlug(params.slug)
+    } catch (e) {
+        if (e instanceof Error && (e as any).code === "ENOENT") {
+            return new Response("not found", { status: 404 })
+        }
 
-export async function GET(request: Request) {
-    // Get title from query params or use default
-    const { searchParams } = new URL(request.url)
-    const title = searchParams.get("title") || "Writing Hypervisor in 10 days in Rust without KVM"
+        throw e
+    }
 
+    const title = post.frontmatter.title;
     return new ImageResponse(
         <div
             style={{

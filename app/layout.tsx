@@ -5,6 +5,16 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata: Metadata = {
   title: "Seiya Nuta",
+  alternates: {
+    types: {
+      "application/atom+xml": [
+        {
+          title: "seiya.me",
+          url: "https://seiya.me/atom.xml",
+        },
+      ],
+    },
+  },
 };
 
 export default function RootLayout({
