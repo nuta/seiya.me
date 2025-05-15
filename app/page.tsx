@@ -29,7 +29,6 @@ export default async function Home() {
           </p>
           <nav className="flex flex-row gap-4">
             <Link href="https://github.com/nuta" prefetch={false}>GitHub</Link>
-            <Link href="https://twitter.com/seiyanuta" prefetch={false}>Twitter</Link>
             <Link href="https://www.linkedin.com/in/seiyanuta/" prefetch={false}>LinkedIn</Link>
           </nav>
         </div>
