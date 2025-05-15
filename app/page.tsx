@@ -68,8 +68,8 @@ export default async function Home() {
           <h2 className="mb-2 text-2xl font-bold">Posts</h2>
           <ul className="list-none space-y-2">
             {posts.map((post) => (
-              <li key={post.slug} className="mb-1 flex flex-col md:flex-row">
-                <span className="text-sm text-gray-700 mr-2 tabular-nums w-[100px] text-right">
+              <li key={post.slug} className="mb-1 flex flex-col md:flex-row md:items-end">
+                <span className="text-sm text-gray-700 mr-3 tabular-nums w-[100px] md:text-right">
                   {toDateString(post.frontmatter.date)}
                 </span>
                 <Link href={`/blog/${post.slug}`}>{post.frontmatter.title}</Link>
