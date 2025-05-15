@@ -20,7 +20,7 @@ function parseDate(page: BlogPost): Date {
 }
 
 
-export function generateFeed(
+function generateFeed(
   pages: BlogPost[],
 ): string {
   const feed = new Feed({
