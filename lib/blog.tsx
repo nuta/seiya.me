@@ -7,6 +7,7 @@ import { JSX } from "react";
 import rehypePrettyCode from "rehype-pretty-code";
 import Image from "next/image";
 import sizeOf from "image-size";
+import crypto from "node:crypto";
 
 export type Slug = string;
 
@@ -25,74 +26,76 @@ export type Frontmatter = {
 export type Scope = {
 }
 
-let cachedPosts: Record<Slug, BlogPost> | null = null;
+async function getPostSlugs(): Promise<Slug[]> {
+    const filenames = await fs.readdir(path.join(process.cwd(), "blog"));
+    const slugs: Slug[] = [];
+    for (const filename of filenames) {
+        if (filename.endsWith(".mdx") || filename.endsWith(".md")) {
+            slugs.push(path.basename(filename, path.extname(filename)));
+        }
+    }
+
+    return slugs;
+}
 
 export async function getBlogPosts(): Promise<Record<Slug, BlogPost>> {
-    if (!cachedPosts) {
-        cachedPosts = await doGetBlogPosts();
-    }
-
-    return cachedPosts;
-}
-
-export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
-    const posts = await getBlogPosts();
-    const post = posts[slug];
-    if (!post) {
-        return null;
-    }
-
-    return post;
-}
-
-async function doGetBlogPosts(): Promise<Record<Slug, BlogPost>> {
-    const files = await fs.readdir(path.join(process.cwd(), "blog"));
+    const slugs = await getPostSlugs();
     const posts: Record<Slug, BlogPost> = {};
-    for (const file of files) {
-        const source = await fs.readFile(path.join(process.cwd(), "blog", file), "utf-8");
-        if (!file.endsWith(".mdx") && !file.endsWith(".md")) {
-            continue;
-        }
+    for (const slug of slugs) {
+        posts[slug] = await getBlogPostBySlug(slug);
+    }
+    return posts;
+}
 
-        const { content, frontmatter, scope, error } = await evaluate<Frontmatter, Scope>({
-            source,
-            options: {
-                parseFrontmatter: true,
-                mdxOptions: {
-                    rehypePlugins: [
-                        [rehypePrettyCode, {
-                            theme: "github-dark",
-                        }]
-                    ]
-                }
-            },
-            components: {
-                img: (props) => {
-                    if (!props.src.startsWith("/")) {
-                        throw new Error(`Image src must start with /: ${props.src}`);
-                    }
+let cachedPosts: Map<Slug, { hash: string, post: BlogPost }> = new Map();
 
-                    const imagePath = path.join(process.cwd(), "public", props.src);
-                    const image = readFileSync(imagePath);
-                    const size = sizeOf(image);
+export async function getBlogPostBySlug(slug: Slug): Promise<BlogPost> {
+    const mdxPath = path.join(process.cwd(), "blog", `${slug}.mdx`);
+    const source = await fs.readFile(mdxPath, "utf-8");
+    const hash = crypto.createHash("sha256").update(source).digest("hex");
 
-                    return <Image src={`${props.src}`} alt={props.alt} width={size.width} height={size.height} />;
-                },
-            },
-        });
-
-        if (error) {
-            throw new Error(`Error evaluating blog post ${file}: ${error}`);
-        }
-
-        const slug = file.replace(/\..*$/, "");
-        posts[slug] = {
-            slug,
-            frontmatter,
-            mdx: content,
-            scope
-        };
+    const cached = cachedPosts.get(slug);
+    if (cached && cached.hash === hash) {
+        return cached.post;
     }
 
-    return posts;
+    const { content, frontmatter, scope, error } = await evaluate<Frontmatter, Scope>({
+        source,
+        options: {
+            parseFrontmatter: true,
+            mdxOptions: {
+                rehypePlugins: [
+                    [rehypePrettyCode, {
+                        theme: "github-dark",
+                    }]
+                ]
+            }
+        },
+        components: {
+            img: (props) => {
+                if (!props.src.startsWith("/")) {
+                    throw new Error(`Image src must start with /: ${props.src}`);
+                }
+
+                const imagePath = path.join(process.cwd(), "public", props.src);
+                const image = readFileSync(imagePath);
+                const size = sizeOf(image);
+
+                return <Image src={`${props.src}`} alt={props.alt} width={size.width} height={size.height} />;
+            },
+        },
+    });
+
+    if (error) {
+        throw new Error(`Error evaluating blog post ${mdxPath}: ${error}`);
+    }
+
+    const post = {
+        slug,
+        frontmatter,
+        mdx: content,
+        scope
+    };
+    cachedPosts.set(slug, { hash, post });
+    return post;
 }
