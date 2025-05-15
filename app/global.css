@@ -1,6 +1,27 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
+}
+
+a {
+    color: blue;
+    text-decoration: underline;
+  }
+  
+a:visited {
+    color: purple;
+}
+  
+a:hover {
+    color: darkblue;
+}
+  
+a:active {
+    color: darkred;
+}
+  
 .prose {
     ::before {
         content: none;

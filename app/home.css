@@ -1,20 +1,3 @@
-a {
-  color: blue;
-  text-decoration: underline;
-}
-
-a:visited {
-  color: purple;
-}
-
-a:hover {
-  color: darkblue;
-}
-
-a:active {
-  color: darkred;
-}
-
 ul:not(.list-none) {
   list-style-type: disc;
   margin-left: 1rem;
