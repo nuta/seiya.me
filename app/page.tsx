@@ -37,7 +37,7 @@ export default async function Home() {
       <main className="my-12">
         <section className="mt-12">
           <h2 className="mb-2 text-2xl font-bold">Projects</h2>
-          <ul>
+          <ul className="space-y-2">
             <li>
               <Link href="https://github.com/starina-os/starina" prefetch={false}>Starina</Link>
               : A modern general-purpose microkernel-based operating system written in Rust.
@@ -51,7 +51,7 @@ export default async function Home() {
 
         <section className="mt-8">
           <h2 className="mb-2 text-2xl font-bold">Publications</h2>
-          <ul>
+          <ul className="space-y-2">
             <li>
               <Link href="https://github.com/nuta/microkernel-book" prefetch={false}>Design and Implementation of Microkernels</Link>
               : A comprehensive guide that delves into the world of microkernels including real-world microkernels (seL4, MINIX3, and Mach), and
@@ -66,7 +66,7 @@ export default async function Home() {
 
         <section className="mt-8">
           <h2 className="mb-2 text-2xl font-bold">Posts</h2>
-          <ul className="list-none">
+          <ul className="list-none space-y-2">
             {posts.map((post) => (
               <li key={post.slug} className="mb-1 flex flex-col md:flex-row">
                 <span className="text-sm text-gray-700 mr-2 tabular-nums w-[100px] text-right">
