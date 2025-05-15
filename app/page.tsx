@@ -20,14 +20,12 @@ export default async function Home() {
         <div className="ml-5 py-1 flex flex-col justify-between self-stretch">
           <div>
             <h1 className="text-2xl font-bold">Seiya Nuta</h1>
-            <p>
-              An operating system kernel enthusiast.
-            </p>
           </div>
           <p className="my-2 font-mono text-sm select-all">
             nuta@<span className="hidden">invisible in real browsers</span>seiya.me
           </p>
           <nav className="flex flex-row gap-4">
+            <a href="#posts">Blog</a>
             <Link href="https://github.com/nuta" prefetch={false}>GitHub</Link>
             <Link href="https://www.linkedin.com/in/seiyanuta/" prefetch={false}>LinkedIn</Link>
           </nav>
@@ -63,8 +61,15 @@ export default async function Home() {
           </ul>
         </section>
 
-        <section className="mt-8">
-          <h2 className="mb-2 text-2xl font-bold">Posts</h2>
+        <section id="posts" className="mt-8">
+          <h2 className="mb-2 text-2xl font-bold">
+            Posts
+            <span className="text-base text-gray-700 ml-2">
+              (
+              <Link href="/atom.xml" prefetch={false}>feed</Link>
+              )
+            </span>
+          </h2>
           <ul className="list-none space-y-2">
             {posts.map((post) => (
               <li key={post.slug} className="mb-1 flex flex-col md:flex-row md:items-end">
@@ -76,6 +81,12 @@ export default async function Home() {
             ))}
           </ul>
         </section>
+
+        <footer className="mt-12 text-center text-sm text-gray-700">
+          <p>
+            Powered by <Link href="https://github.com/nuta/seiya.me" prefetch={false}>Next.js</Link>
+          </p>
+        </footer>
       </main>
     </div>
   );
