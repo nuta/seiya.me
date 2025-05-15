@@ -12,7 +12,7 @@ export default async function Home() {
   const posts = Object.values(await getBlogPosts()).sort((a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime());
 
   return (
-    <div className="font-['Times']">
+    <div className="font-sans">
       <header className="flex flex-row items-center">
         <div>
           <Image src={MyPicture} alt="selfie" className="rounded max-w-24" />
@@ -24,6 +24,9 @@ export default async function Home() {
               An operating system kernel enthusiast.
             </p>
           </div>
+          <p className="my-2 font-mono text-sm select-all">
+            nuta@<span className="hidden">invisible in real browsers</span>seiya.me
+          </p>
           <nav className="flex flex-row gap-4">
             <Link href="https://github.com/nuta" prefetch={false}>GitHub</Link>
             <Link href="https://twitter.com/seiyanuta" prefetch={false}>Twitter</Link>
@@ -36,20 +39,32 @@ export default async function Home() {
           <h2 className="mb-2 text-2xl font-bold">Projects</h2>
           <ul>
             <li>
-              <Link href="https://github.com/starina-os/starina" prefetch={false}>Starina operating system</Link>
+              <Link href="https://github.com/starina-os/starina" prefetch={false}>Starina</Link>
+              : A modern general-purpose microkernel-based operating system written in Rust.
+            </li>
+            <li>
+              <Link href="https://github.com/nuta/kerla" prefetch={false}>Kerla</Link>
+              : A Linux ABI-compatible kernel written in Rust.
             </li>
           </ul>
         </section>
 
-        <section className="mt-12">
+        <section className="mt-8">
           <h2 className="mb-2 text-2xl font-bold">Publications</h2>
           <ul>
             <li>
+              <Link href="https://github.com/nuta/microkernel-book" prefetch={false}>Design and Implementation of Microkernels</Link>
+              : A comprehensive guide that delves into the world of microkernels including real-world microkernels (seL4, MINIX3, and Mach), and
+              a minimalistic educational microkernel (<Link href="https://github.com/nuta/microkernel-book" prefetch={false}>HinaOS</Link>).
+            </li>
+            <li>
+              <Link href="https://github.com/nuta/operating-system-in-1000-lines" prefetch={false}>Writing an Operating System in 1,000 Lines</Link>
+              : A beginner's guide to implement context switching, paging, system calls, user mode, virtio-blk driver, file system, and shell in 1,000 lines of C.
             </li>
           </ul>
         </section>
 
-        <section className="mt-12">
+        <section className="mt-8">
           <h2 className="mb-2 text-2xl font-bold">Posts</h2>
           <ul className="list-none">
             {posts.map((post) => (

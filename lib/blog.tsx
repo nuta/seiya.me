@@ -21,6 +21,7 @@ export interface BlogPost {
 export type Frontmatter = {
     title: string;
     date: string;
+    lang?: string;
 }
 
 export type Scope = {
