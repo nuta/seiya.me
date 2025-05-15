@@ -1,16 +1,39 @@
 ---
 title: A Diary of Writing a RISC-V Hypervisor
-date: 2025-05-05
+date: 2025-05-15
 ---
 
-## Entering the guest
+To implement a seamless Linux integration into Starina, I decided to go with a Linux lightweight VM approach similar to WSL2. This means I need to implement a hypervisor that can run Linux.
 
-but instruction page faults
+I had [implemented an Intel VT-x based hypervisor](/blog/implementing-hypervisor-on-resea) before, but this time I wanted to try something different: RISC-V H-extension based hypervisor!
 
+This post is a diary of my journey of writing a RISC-V hypervisor incrementally.
 
-## First ecall
+## RISC-V H-extension
 
-`PTE_U`
+RISC-V H-extension introduces new CPU modes and some more CSRs (so-called control registers) to implement hardware-assisted virtualization. Its design is similar to Intel VT-x in the sense that both host and guest modes have their own kernel mode and user mode. This design makes it easy to run host OS along with guests, that is, guests behave as normal host processes (e.g. QEMU and Firecracker).
+
+## How can I test a hypervisor on macOS?
+
+Unlike Linux KVM-based hypervisors (more specifically, virtual machine monitors), Starina is a new operating system and has been tested on QEMU.
+
+In this case, you typically need to use nested virtualization where the hardware-assisted virtualization is emulated by the host OS. That's how I did it for Intel VT-x.
+
+Here's a great news: QEMU itself can emulate RISC-V H-extension! You just need to add `-cpu rv64,h=true` to the QEMU command line. I presume this is thanks to RISC-V's simplicity and designers' foresight (and of course QEMU developers' effort!).
+
+Having a software emulation in QEMU is a key enabler when you're writing a new operating system from scratch because you can attach GDB to QEMU to debug the OS.
+
+## Step 1: Entering the guest
+
+The first thing to do is to enter the guest state. In RISC-V, guest kernel mode is called VS-mode. In RISC-V, you just fill few CSRs. Specifically, `hstatus.SPV` should be set to 1 before `sret` instruction:
+
+![first-inst-guest-page-fault](/images/riscv-hypervisor/first-inst-guest-page-fault.png)
+
+The kernel panicked with an interesting error name: *instruction **guest**-page fault*. Yes, CPU has entered the guest mode!
+
+## Step 2: First `ecall`
+
+The next step is to run something in the guest mode. Let's start with a simple `ecall`:
 
 ```rust
 const BOOT_CODE: &[u8] = &[
@@ -18,9 +41,17 @@ const BOOT_CODE: &[u8] = &[
 ];
 ```
 
+To make it work, we need to prepare the guest's page table which maps the guest-physical address to the host-physical address so that the CPU can read the instructions in `BOOT_CODE`.
+
+RISC-V defines another paging modes called Sv39x4/Sv48x4/Sv57x4, and they're mostly identical to Sv39/Sv48/Sv57. The only caveat is U bit needs to be set to 1 for kernel pages too.
+
+Once `hgatp` is set, I got another trap reason:
+
 ![first ecall](/images/riscv-hypervisor/first-ecall.png)
 
-## Hello World from guest!
+## Step 3: Hello World from guest!
+
+Now we're ready to run a Hello World program. I wrote a simple program in assembly:
 
 ```
 .section .text
@@ -46,14 +77,20 @@ _start:
     unimp
 ```
 
+This assumes hypervisor's ecall handler implements the SBI, a RISC-V's BIOS interface. This snippet calls so-called `putchar` API and finally calls an invalid instruction (`unimp`) to trigger a trap.
+
+Building this tiny guest OS is easy:
+
 ```
 $ clang --target=riscv64 -march=rv64g -nostdlib -Wl,-Ttext=0x80200000 guest.S -o guest.elf
 $ llvm-objcopy -O binary guest.elf guest.bin
 ```
 
+And it works!
+
 ![minimal hello world](/images/riscv-hypervisor/minimal-hello-world.png)
 
-## Building Linux
+## Step 4: Building Linux
 
 ##
 
@@ -61,9 +98,7 @@ hedeleg - Linux uses stvec as a hack
 
 ## Device Tree
 
-```
-
-```
+![null dereference in device tree](/images/riscv-hypervisor/null-dereference-in-device-tree.png)
 
 ```
 $ gobjdump -d linux/vmlinux | grep -A 5 801cace8 | head
@@ -115,6 +150,8 @@ ffffffff80170dc2:   8082                ret
 `hideleg`
 
 ## Sstc extension
+
+![linux-hello-world](/images/riscv-hypervisor/linux-hello-world.png)
 
 
 ## MMIO support
