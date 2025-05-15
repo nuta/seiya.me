@@ -36,11 +36,11 @@ export default async function Home() {
           <h2 className="mb-2 text-2xl font-bold">Projects</h2>
           <ul className="space-y-2">
             <li>
-              <Link href="https://github.com/starina-os/starina" prefetch={false}>Starina</Link>
+              <Link href="https://github.com/starina-os/starina" prefetch={false} className="font-bold">Starina</Link>
               : A modern general-purpose microkernel-based operating system written in Rust.
             </li>
             <li>
-              <Link href="https://github.com/nuta/kerla" prefetch={false}>Kerla</Link>
+              <Link href="https://github.com/nuta/kerla" prefetch={false} className="font-bold">Kerla</Link>
               : A Linux ABI-compatible kernel written in Rust.
             </li>
           </ul>
@@ -50,12 +50,12 @@ export default async function Home() {
           <h2 className="mb-2 text-2xl font-bold">Publications</h2>
           <ul className="space-y-2">
             <li>
-              <Link href="https://github.com/nuta/microkernel-book" prefetch={false}>Design and Implementation of Microkernels</Link>
+              <Link href="https://github.com/nuta/microkernel-book" prefetch={false} className="font-bold">Design and Implementation of Microkernels</Link>
               : A comprehensive guide that delves into the world of microkernels including real-world microkernels (seL4, MINIX3, and Mach), and
               a minimalistic educational microkernel (<Link href="https://github.com/nuta/microkernel-book" prefetch={false}>HinaOS</Link>).
             </li>
             <li>
-              <Link href="https://github.com/nuta/operating-system-in-1000-lines" prefetch={false}>Writing an Operating System in 1,000 Lines</Link>
+              <Link href="https://github.com/nuta/operating-system-in-1000-lines" prefetch={false} className="font-bold">Writing an Operating System in 1,000 Lines</Link>
               : A beginner's guide to implement context switching, paging, system calls, user mode, virtio-blk driver, file system, and shell in 1,000 lines of C.
             </li>
           </ul>
