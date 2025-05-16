@@ -21,6 +21,10 @@ a:hover {
 a:active {
     color: darkred;
 }
+
+code {
+    @apply select-all;
+}
   
 .prose {
     ::before {

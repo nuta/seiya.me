@@ -22,7 +22,7 @@ export default async function Home() {
           <div>
             <h1 className="text-2xl font-bold">Seiya Nuta</h1>
           </div>
-          <p className="my-2 font-mono text-sm select-all">
+          <p className="my-2 font-mono text-base select-all">
             nuta@<span className="hidden">invisible in real browsers</span>seiya.me
           </p>
           <nav className="flex flex-row gap-4">
