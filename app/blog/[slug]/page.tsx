@@ -62,7 +62,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
                     {post.frontmatter.date}
                 </p>
             </header>
-            <div className="">
+            <div className="font-[PT Serif]">
                 {post.mdx}
             </div>
             <footer className="text-center mt-12 mb-8">
