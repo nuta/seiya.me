@@ -80,7 +80,13 @@ export async function getBlogPostBySlug(slug: Slug): Promise<BlogPost> {
 
                 const imagePath = path.join(process.cwd(), "public", props.src);
                 const image = readFileSync(imagePath);
-                const size = sizeOf(image);
+
+                let size;
+                try {
+                    size = sizeOf(image);
+                } catch (e) {
+                    throw new Error(`Error getting image size for ${props.src}: ${e}`);
+                }
 
                 return <Image src={`${props.src}`} alt={props.alt} width={size.width} height={size.height} />;
             },

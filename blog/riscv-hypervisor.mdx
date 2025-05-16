@@ -27,7 +27,7 @@ Having a software emulation in QEMU is a key enabler when you're writing a new o
 
 The first thing to do is to enter the guest state. In RISC-V, guest kernel mode is called VS-mode. In RISC-V, you just fill few CSRs. Specifically, `hstatus.SPV` should be set to 1 before `sret` instruction:
 
-![first-inst-guest-page-fault](/images/riscv-hypervisor/first-inst-guest-page-fault.png)
+![first-inst-guest-page-fault](/media/riscv-hypervisor/first-inst-guest-page-fault.png)
 
 The kernel panicked with an interesting error name: *instruction **guest**-page fault*. Yes, CPU has entered the guest mode!
 
@@ -47,7 +47,7 @@ RISC-V defines another paging modes called Sv39x4/Sv48x4/Sv57x4, and they're mos
 
 Once `hgatp` is set, I got another trap reason:
 
-![first ecall](/images/riscv-hypervisor/first-ecall.png)
+![first ecall](/media/riscv-hypervisor/first-ecall.png)
 
 ## Step 3: Hello World from guest!
 
@@ -88,7 +88,7 @@ $ llvm-objcopy -O binary guest.elf guest.bin
 
 And it works!
 
-![minimal hello world](/images/riscv-hypervisor/minimal-hello-world.png)
+![minimal hello world](/media/riscv-hypervisor/minimal-hello-world.png)
 
 ## Step 4: Booting Linux
 
@@ -113,7 +113,7 @@ The boot image format is documented [here](https://www.kernel.org/doc/html/v5.5/
 
 Looks like Linux booted, but it crashed with a null dereference:
 
-![null dereference in device tree](/images/riscv-hypervisor/null-dereference-in-device-tree.png)
+![null dereference in device tree](/media/riscv-hypervisor/null-dereference-in-device-tree.png)
 
 According to the `sepc` value, the kernel panicked at `__pi_fdt32_ld`:
 
@@ -154,7 +154,7 @@ This step is also the first time I needed to inject interrupts into the guest. W
 
 Once I enabled `sstc` extension and implemented interrupt handling correctly, the kernel booted successfully:
 
-![linux-hello-world](/images/riscv-hypervisor/linux-hello-world.png)
+![linux-hello-world](/media/riscv-hypervisor/linux-hello-world.png)
 
 ## Step 8: MMIO support
 
@@ -165,7 +165,7 @@ wider than the current XLEN
 
 ## Step 9: Virtio-fs
 
-![virtio-fs](/images/riscv-hypervisor/hello-from-virtio-fs.png)
+![virtio-fs](/media/riscv-hypervisor/hello-from-virtio-fs.png)
 
 
 ## Fun Tips
@@ -192,6 +192,6 @@ add-symbol-file apps/servers/lx/linux/vmlinux
 
 And look! You're seeing the guest's kernel stack trace!
 
-![gdb](/images/riscv-hypervisor/you-can-attach-gdb.png)
+![gdb](/media/riscv-hypervisor/you-can-attach-gdb.png)
 
 BTW, this is why I haven't yet implemented stack traces in Starina: you just need to attach the GDB and type `bt`.
