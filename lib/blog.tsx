@@ -1,13 +1,9 @@
 
-import { readFileSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { evaluate } from "next-mdx-remote-client/rsc";
 import { JSX } from "react";
-import rehypePrettyCode from "rehype-pretty-code";
-import Image from "next/image";
-import sizeOf from "image-size";
 import crypto from "node:crypto";
+import { renderMDX } from "./mdx";
 
 export type Slug = string;
 
@@ -65,48 +61,18 @@ export async function getBlogPostBySlug(slug: Slug): Promise<BlogPost> {
         return cached.post;
     }
 
-    const { content, frontmatter, scope, error } = await evaluate<Frontmatter, Scope>({
-        source,
-        options: {
-            parseFrontmatter: true,
-            mdxOptions: {
-                rehypePlugins: [
-                    [rehypePrettyCode, {
-                        theme: "github-dark",
-                    }]
-                ]
-            }
-        },
-        components: {
-            img: (props) => {
-                if (!props.src.startsWith("/")) {
-                    throw new Error(`Image src must start with /: ${props.src}`);
-                }
-
-                const imagePath = path.join(process.cwd(), "public", props.src);
-                const image = readFileSync(imagePath);
-
-                let size;
-                try {
-                    size = sizeOf(image);
-                } catch (e) {
-                    throw new Error(`Error getting image size for ${props.src}: ${e}`);
-                }
-
-                return <Image src={`${props.src}`} alt={props.alt} width={size.width} height={size.height} />;
-            },
-        },
-    });
-
-    if (error) {
-        throw new Error(`Error evaluating blog post ${mdxPath}: ${error}`);
+    let rendered;
+    try {
+        rendered = await renderMDX(source);
+    } catch (err) {
+        throw new Error(`Error rendering blog post ${mdxPath}: ${err}`);
     }
 
     const post = {
         slug,
-        frontmatter,
-        mdx: content,
-        scope
+        frontmatter: rendered.frontmatter,
+        mdx: rendered.content,
+        scope: rendered.scope,
     };
     cachedPosts.set(slug, { hash, post });
     return post;

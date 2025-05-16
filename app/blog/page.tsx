@@ -25,7 +25,7 @@ export default async function BlogIndex() {
             <ul className="list-none">
                 {posts.map((post) => (
                     <li key={post.slug} className="mb-1 mb-4 flex flex-col md:flex-row md:items-end">
-                        <span className="text-sm text-gray-700 mr-3 tabular-nums w-[100px] md:text-right">
+                        <span className="text-sm gray-text mr-3 tabular-nums w-[100px] md:text-right">
                             {toDateString(post.frontmatter.date)}
                         </span>
                         <Link href={`/blog/${post.slug}`} prefetch={false}>{post.frontmatter.title}</Link>

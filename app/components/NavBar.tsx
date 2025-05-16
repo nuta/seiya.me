@@ -7,7 +7,7 @@ const navItems = [
   },
   {
     label: "blog",
-    href: "/#posts",
+    href: "/blog",
   },
   {
     label: "github",

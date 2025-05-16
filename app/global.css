@@ -3,35 +3,29 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
+    @apply dark:bg-neutral-900 dark:text-white;
+}
+
+.gray-text {
+    @apply text-gray-500 dark:text-gray-300;
 }
 
 a {
-    color: blue;
-    text-decoration: underline;
-  }
-  
+    @apply text-blue-600 dark:text-blue-400 underline;
+}
+
 a:visited {
-    color: purple;
+    @apply text-purple-600 dark:text-purple-400;
 }
-  
+
 a:hover {
-    color: darkblue;
+    @apply text-blue-800 dark:text-blue-300;
 }
-  
+
 a:active {
-    color: darkred;
+    @apply text-red-800 dark:text-red-400;
 }
 
 code {
     @apply select-all;
-}
-  
-.prose {
-    ::before {
-        content: none;
-    }
-
-    ::after {
-        content: none;
-    }
 }

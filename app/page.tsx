@@ -61,7 +61,7 @@ export default async function Home() {
         <section className="mt-8">
           <h2 className="mb-2 text-2xl font-bold">
             Blog
-            <span className="text-base text-gray-700 ml-2">
+            <span className="text-base gray-text ml-2">
               <Link href="/atom.xml" prefetch={false}>
                 <FaRssSquare className="inline-block mr-1 text-orange-500" />
                 feed
@@ -71,7 +71,7 @@ export default async function Home() {
           <ul className="list-none space-y-2">
             {posts.map((post) => (
               <li key={post.slug} className="mb-1 flex flex-col md:flex-row md:items-end">
-                <span className="text-sm text-gray-700 mr-3 tabular-nums w-[100px] md:text-right">
+                <span className="text-sm gray-text mr-3 tabular-nums w-[100px] md:text-right">
                   {toDateString(post.frontmatter.date)}
                 </span>
                 <Link href={`/blog/${post.slug}`} prefetch={false}>{post.frontmatter.title}</Link>

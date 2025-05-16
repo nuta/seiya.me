@@ -58,11 +58,11 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
             <NavBar />
             <header className="mb-12">
                 <h1 className="text-2xl font-bold">{post.frontmatter.title}</h1>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm gray-text mt-2">
                     {post.frontmatter.date}
                 </p>
             </header>
-            <div className="prose prose-neutral lg:prose-lg">
+            <div className="">
                 {post.mdx}
             </div>
             <footer className="text-center mt-12 mb-8">
