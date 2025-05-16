@@ -3,7 +3,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
-    @apply dark:bg-neutral-900 dark:text-white;
+    @apply dark:bg-neutral-800 dark:text-white;
 }
 
 .gray-text {
@@ -26,6 +26,6 @@ a:active {
     @apply text-red-800 dark:text-red-400;
 }
 
-code {
+code:not(pre code) {
     @apply select-all;
 }
