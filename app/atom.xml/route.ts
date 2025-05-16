@@ -19,7 +19,6 @@ function parseDate(page: BlogPost): Date {
   return new Date(page.frontmatter.date);
 }
 
-
 function generateFeed(
   pages: BlogPost[],
 ): string {
@@ -58,6 +57,8 @@ function generateFeed(
 
   return feed.atom1();
 }
+
+export const dynamic = "force-static";
 
 export const GET = async (req: Request) => {
   const pages = Object.values(await getBlogPosts())

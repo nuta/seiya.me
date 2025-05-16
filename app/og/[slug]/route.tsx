@@ -1,5 +1,12 @@
-import { BlogPost, getBlogPostBySlug } from "@/lib/blog"
+import { BlogPost, getBlogPostBySlug, getBlogPosts } from "@/lib/blog"
 import { ImageResponse } from "next/og"
+
+export async function generateStaticParams(): Promise<{ params: { slug: string } }[]> {
+    const posts = await getBlogPosts();
+    return Object.keys(posts).map((slug) => ({
+        params: { slug },
+    }));
+}
 
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
     const slug = (await params).slug;
