@@ -1,10 +1,11 @@
 import { BlogPost, getBlogPostBySlug } from "@/lib/blog"
 import { ImageResponse } from "next/og"
 
-export async function GET(request: Request, { params }: { params: { slug: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
+    const slug = (await params).slug;
     let post: BlogPost;
     try {
-        post = await getBlogPostBySlug(params.slug)
+        post = await getBlogPostBySlug(slug)
     } catch (e) {
         if (e instanceof Error && (e as any).code === "ENOENT") {
             return new Response("not found", { status: 404 })
