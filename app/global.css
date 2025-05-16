@@ -1,5 +1,8 @@
 @import 'tailwindcss';
-@plugin '@tailwindcss/typography';
+
+@theme {
+    --text-base: 17px;
+}
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
