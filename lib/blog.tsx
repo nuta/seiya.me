@@ -48,6 +48,11 @@ export async function getBlogPosts(): Promise<Record<Slug, BlogPost>> {
     return posts;
 }
 
+export async function getSortedBlogPosts(): Promise<BlogPost[]> {
+    const posts = await getBlogPosts();
+    return Object.values(posts).sort((a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime());
+}
+
 let cachedPosts: Map<Slug, { hash: string, post: BlogPost }> = new Map();
 
 export async function getBlogPostBySlug(slug: Slug): Promise<BlogPost> {

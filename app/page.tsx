@@ -3,15 +3,11 @@ import MyPicture from "./me.jpg";
 import Link from "next/link";
 import { FaRssSquare } from "react-icons/fa";
 import "./home.css";
-import { getBlogPosts } from "@/lib/blog";
-
-function toDateString(date: string) {
-  return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-}
+import { getSortedBlogPosts } from "@/lib/blog";
+import { toDateString } from "@/lib/date";
 
 export default async function Home() {
-  const posts = Object.values(await getBlogPosts()).sort((a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime());
-
+  const posts = await getSortedBlogPosts();
   return (
     <div className="font-sans">
       <header className="flex flex-row items-center">
@@ -26,7 +22,7 @@ export default async function Home() {
             nuta@<span className="hidden">invisible in real browsers</span>seiya.me
           </p>
           <nav className="flex flex-row gap-4">
-            <a href="#posts">Blog</a>
+            <Link href="/blog" prefetch={false}>Blog</Link>
             <Link href="https://github.com/nuta" prefetch={false}>GitHub</Link>
             <Link href="https://www.linkedin.com/in/seiyanuta/" prefetch={false}>LinkedIn</Link>
           </nav>
@@ -62,16 +58,14 @@ export default async function Home() {
           </ul>
         </section>
 
-        <section id="posts" className="mt-8">
+        <section className="mt-8">
           <h2 className="mb-2 text-2xl font-bold">
-            Posts
+            Blog
             <span className="text-base text-gray-700 ml-2">
-              (
               <Link href="/atom.xml" prefetch={false}>
                 <FaRssSquare className="inline-block mr-1 text-orange-500" />
                 feed
               </Link>
-              )
             </span>
           </h2>
           <ul className="list-none space-y-2">
