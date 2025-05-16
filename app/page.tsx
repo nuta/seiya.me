@@ -1,6 +1,7 @@
 import Image from "next/image";
 import MyPicture from "./me.jpg";
 import Link from "next/link";
+import { FaRssSquare } from "react-icons/fa";
 import "./home.css";
 import { getBlogPosts } from "@/lib/blog";
 
@@ -66,7 +67,10 @@ export default async function Home() {
             Posts
             <span className="text-base text-gray-700 ml-2">
               (
-              <Link href="/atom.xml" prefetch={false}>feed</Link>
+              <Link href="/atom.xml" prefetch={false}>
+                <FaRssSquare className="inline-block mr-1 text-orange-500" />
+                feed
+              </Link>
               )
             </span>
           </h2>
