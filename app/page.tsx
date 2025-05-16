@@ -34,11 +34,11 @@ export default async function Home() {
           <ul className="space-y-2">
             <li>
               <Link href="https://github.com/starina-os/starina" prefetch={false} className="font-bold">Starina</Link>
-              : A modern general-purpose microkernel-based operating system written in Rust.
+              : A modern, general-purpose, and microkernel-based operating system.
             </li>
             <li>
               <Link href="https://github.com/nuta/kerla" prefetch={false} className="font-bold">Kerla</Link>
-              : A Linux ABI-compatible kernel written in Rust.
+              : A Linux ABI-compatible kernel written in Rust. It supports fork/execve, signals, mmap, pipe, poll, tty/pty, tmpfs, UDP/TCP sockets, and more to <Link href="/blog/writing-linux-clone-in-rust" prefetch={false}>run Dropbear SSH server</Link>.
             </li>
           </ul>
         </section>
