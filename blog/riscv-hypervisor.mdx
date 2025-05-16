@@ -150,7 +150,7 @@ In RISC-V there are two approaches to implement a timer:
 - `sbi_set_timer`: Call the hypervisor (SBI) to set the timer.
 - `sstc` extension: A CPU extension to trigger a timer interrupt without hypervisor's help.
 
-This step is also the first time I needed to inject interrupts into the guest. While RISC-V spec is clean, but I was totally lost with how to do it. The bottom line is `hideleg` was what I needed to set, but I was confused by RISC-V Advanced Interrupt Architecture, which extends the RISC-V interrupt handling. RISC-V extensions are more somtimes look like "patches" to the base spec.
+This step is also the first time I needed to inject interrupts into the guest. While RISC-V spec is clean, but I was totally lost with how to do it. Setting `hideleg` was what I needed to do, but I was confused by RISC-V Advanced Interrupt Architecture, which extends the RISC-V interrupt handling. RISC-V extensions are more somtimes look like "patches" to the base spec. [RISC-V Unified Database](https://github.com/riscv-software-src/riscv-unified-db) is a great resource to understand how the extensions extend the base spec.
 
 Once I enabled `sstc` extension and implemented interrupt handling correctly, the kernel booted successfully:
 
@@ -168,15 +168,7 @@ wider than the current XLEN
 ![virtio-fs](/media/riscv-hypervisor/hello-from-virtio-fs.png)
 
 
-## Fun Tips
-
-### RISC-V extensions are more like "patches"
-
-That is, they may change the behavior. Even if you don't explicitly enable them.
-
-https://github.com/riscv-software-src/riscv-unified-db
-
-### GDB can debug both hypervisor/guest worlds!
+## Tip: Debugging both hypervisor/guest worlds
 
 Starina supports Unikernel-like mode, where the microkernel and apps are built into a single ELF executable. This is not only for performance, but also for debugging.
 
