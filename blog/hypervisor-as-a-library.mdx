@@ -167,7 +167,7 @@ Virtual machines are often considered slow and heavy, but they are not necessari
 
 Starina Linux image is currently embedded into each applicaiton for the time being, but is only 6.7 MB (64-bit RISC-V). The minimal memory space required is around 32MB. It takes 2 seconds in QEMU software emulation to boot the kernel and finish `catsay`. But to be fair, I haven't invested my time to optimize it yet. I'm pretty sure it can be optimized to less than 100ms (in QEMU), or even less than 10ms with VM snapshotting (again, in QEMU's software emulation!).
 
-You might wonder why it doesn't share a single VM instance across multiple applications. That of course makes sense to me, but with VM snapshots, hypervisor-as-a-library has a potential to start your Linux apps faster even than the native Linux environment, and is easier to maintain compared to [Checkpoint/Restore In Userspace](https://criu.org/Main_Page).
+You might wonder why it doesn't share a single VM instance across multiple applications. That of course makes sense to me, but hypervisor-as-a-library has a potential to start your Linux apps faster even than the native Linux environment with VM snapshotting, which would be easier to maintain compared to [Checkpoint/Restore In Userspace](https://criu.org/Main_Page).
 
 I haven't achieved it yet (famous last words), but I'm very optimistic about its practicality. So the answer is, yes, I think it's a good idea!
 
