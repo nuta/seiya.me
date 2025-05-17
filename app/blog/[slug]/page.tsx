@@ -56,7 +56,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
     return (
         <article>
             <NavBar />
-            <header className="mb-12">
+            <header className="mb-8">
                 <h1 className="text-2xl font-sans font-bold">{post.frontmatter.title}</h1>
                 <p className="text-sm gray-text mt-2">
                     {post.frontmatter.date}

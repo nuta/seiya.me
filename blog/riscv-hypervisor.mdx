@@ -125,7 +125,7 @@ ffffffff801cacec:	00154703          	lbu	a4,1(a0)
 ffffffff801cacf0:	0187979b          	slliw	a5,a5,0x18
 ```
 
-## Step 5:Device Tree
+## Step 5: Device Tree
 
 In RISC-V, we need to provide a device tree, the tree structure defining what devices are available in the computer.
 
@@ -182,7 +182,7 @@ For future RISC-V hypervisor developers, here are few pitfalls I encountered:
 - A guest physical address written to `htval` is shifted right by 2 bits. You'll see a weird address if you forget this.
 - `htinst` could be compressed instruction. This means the instruction width is not always 4 bytes, but sometimes 2 bytes.
 
-## Step 9: Virtio-fs
+## Step 9: virtio-fs
 
 This is the last step of this post. While virito-blk is a typical choise to provide the root filesystem, I chose something different: virtio-fs.
 
@@ -207,7 +207,7 @@ Here's a `gdbinit` script which enabled me to watch VMM, hypervisor in Starina k
 file build/kernel/debug/kernel
 
 # Load Linux (guest's) debug info
-add-symbol-file apps/servers/lx/linux/vmlinux
+add-symbol-file path/to/vmlinux
 ```
 
 And look! You're seeing the guest's kernel stack trace!

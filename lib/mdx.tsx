@@ -47,7 +47,7 @@ export async function renderMDX(source: string) {
         components: {
             img: MyImage,
             a: (props) => <Link href={props.href} prefetch={false}>{props.children}</Link>,
-            h2: (props) => <h2 className="font-sans text-2xl font-bold mt-14 mb-6 pb-2 border-b border-gray-200 dark:border-gray-700">{props.children}</h2>,
+            h2: (props) => <h2 className="font-sans text-2xl font-bold mt-14 mb-6 pb-1 border-b border-gray-300 dark:border-gray-700">{props.children}</h2>,
             h3: (props) => <h3 className="font-sans text-xl font-semibold mt-10 mb-4">{props.children}</h3>,
             h4: (props) => <h4 className="font-sans text-lg font-semibold mt-8 mb-3">{props.children}</h4>,
             h5: (props) => <h5 className="font-sans text-lg font-semibold mt-6 mb-2">{props.children}</h5>,
