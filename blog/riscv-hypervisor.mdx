@@ -19,13 +19,13 @@ Unlike Linux KVM-based hypervisors (more specifically, virtual machine monitors)
 
 In this case, you typically need to use nested virtualization where the hardware-assisted virtualization is emulated by the host OS. That's how I did it for Intel VT-x.
 
-Here's a great news: QEMU itself can emulate RISC-V H-extension! You just need to add `-cpu rv64,h=true` to the QEMU command line. I presume this is thanks to RISC-V's simplicity and designers' foresight (and of course QEMU developers' effort!).
+Here's great news: QEMU itself can emulate RISC-V H-extension! You just need to add `-cpu rv64,h=true` to the QEMU command line. I presume this is thanks to RISC-V's simplicity and designers' foresight (and of course QEMU developers' effort!).
 
 Having a software emulation in QEMU is a key enabler when you're writing a new operating system from scratch because you can attach GDB to QEMU to debug the OS.
 
 ## Step 1: Entering the guest
 
-The first thing to do is to enter the guest state. In RISC-V, guest kernel mode is called VS-mode. In RISC-V, you just fill few CSRs. Specifically, `hstatus.SPV` should be set to 1 before `sret` instruction:
+The first thing to do is to enter the guest state. In RISC-V, guest kernel mode is called VS-mode. In RISC-V, you just fill a few CSRs. Specifically, `hstatus.SPV` should be set to 1 before `sret` instruction:
 
 ![first-inst-guest-page-fault](/media/riscv-hypervisor/first-inst-guest-page-fault.png)
 
