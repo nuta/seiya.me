@@ -9,7 +9,7 @@ Before we dive into the topic, let me introduce you my new friend `catsay`, a si
 
 ![catsay](/media/hypervisor-as-a-library/catsay.png)
 
-Cute! ... but it's not the point. What makes this screenshot very exciting is that it is a Linux lightweight virtual machine running on [Starina operating system](https://starina.dev/)!
+Cute! ... but it's not the point. What makes this screenshot very exciting is, it's a Linux lightweight virtual machine running on [Starina operating system](https://starina.dev/)!
 
 That said, I'm not here to talk about how hard it is to write a hypervisor. In fact, it's not that hard. The hardest part is to design how you interact with hypervisor, or design the API of the hypervisor. Starina needs a seamless integration with Linux.
 
@@ -22,7 +22,6 @@ First, if you were to write a Rust application which uses `catsay`, how do you i
 In Rust, you would use [`std::process::Command`](https://doc.rust-lang.org/std/process/struct.Command.html) to run `catsay`:
 
 ```rust
-let stdin = File::open("/etc/motd").unwrap();
 Command::new("/bin/catsay")
     .stdin(stdin)
     .spawn()
@@ -31,7 +30,6 @@ Command::new("/bin/catsay")
 If the script needs an environment variable, you only need to add a single line:
 
 ```rust
-let stdin = File::open("/etc/motd").unwrap();
 Command::new("/bin/catsay")
     .stdin(stdin)
     .env("CATSAY_MODE", "dog")
@@ -41,7 +39,6 @@ Command::new("/bin/catsay")
 Nice. If you're interested in its output, add another parameter `.stdout`:
 
 ```rust
-let stdin = File::open("/etc/motd").unwrap();
 let child = Command::new("/bin/catsay")
     .stdin(stdin)
     .env("CATSAY_MODE", "dog")
@@ -59,7 +56,7 @@ It's boringly obvious, right? However, on another OS like Starina, it's not obvi
 
 ## Linux compatibility
 
-Providing Linux compatibility is a challenging task, and there are some ways to achieve it. Popular way is to run Linux binaries as kinda *in native*. Hook system calls and emulate Linux ABI. Windows Subsystem for Linux (WSL 1) and FreeBSD Linuxulator are examples.
+Providing Linux compatibility is a challenging task, and there are some ways to achieve it. A popular way is to run Linux binaries as kinda *in native*: hook system calls and emulate them. Windows Subsystem for Linux (WSL 1) and FreeBSD Linuxulator are examples.
 
 In Starina, I took a different approach, which WSL2 also took: **run the real Linux kernel in a lightweight virtual machine**. Why? It's because:
 
@@ -69,7 +66,7 @@ In Starina, I took a different approach, which WSL2 also took: **run the real Li
 
 ## `std::process::Command` for Linux VM
 
-So, running the real Linux kernel in a lightweight VM sounds technically possible. However, how what's the most intuitive and fancy way to actually use it? My answer is, follow the `std::process::Command` pattern!
+So, running the real Linux kernel in a lightweight VM sounds technically possible. However, how do we actually use it? My answer is, follow the `std::process::Command` pattern.
 
 Here's how you can run `catsay` in Starina:
 
@@ -103,15 +100,13 @@ Under the hood, `starina_linux::Command` creates a lightweight VM using Starina'
 Here's a simplified version of how `starina_linux::Command` works:
 
 ```rust
-const LINUX_IMAGE: &[u8] = include_bytes!("linux.bin");
-
 let mut virtio_fs = VirtioFs::new();
 virtio_fs.add_file("/stdin", stdin);
 virtio_fs.add_file("/stdout", stdout);
 
 let ram = Folio::allocate(MEMORY_SIZE); // folio = a memory region
 install_device_tree(&mut ram);
-extract_linux_image(&mut ram, LINUX_IMAGE);
+extract_linux_image(&mut ram, include_bytes!("linux.bin"));
 
 let hvspace = HvSpace::new();
 let vcpu = Vcpu::new(&hvspace);
@@ -131,9 +126,9 @@ loop {
 }
 ```
 
-In short, create a guest-physical address space, install Linux kernel into it, enter the VM world, and handle MMIO accesses to the host. Isn't it surprisingly simple? Linux KVM API also works in the similar way. Hypervisor is generally a very simple program (otherwise we would not want to use it as a security boundary).
+In short, create a guest-physical address space, install Linux kernel into it, enter the VM world, and handle MMIO accesses. Isn't it surprisingly simple? Linux KVM API also works in the similar way. Hypervisor is generally a very simple program (otherwise we would not trust it as a security boundary).
 
-You might notice a mysterious `virtio_fs` object. As its name suggests, it's a virtual file system to provide a seamless integration with Starina. In Linux, stdin you provide is accessible as `/virtfs/stdin` and our custom init connects the virtual file to `catsay`.
+You might notice a mysterious `virtio_fs` object. As its name suggests, it's a virtual file system to provide a seamless integration with Starina. In Linux, stdin you provide is accessible as `/virtfs/stdin` and our custom init connects it to `catsay`.
 
 ## Hypervisor as a library
 
