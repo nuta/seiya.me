@@ -1,0 +1,205 @@
+---
+title: Hypervisor as a Library
+date: 2025-05-18
+layout: blog
+lang: en
+---
+
+Before we dive into the topic, let me introduce you my new friend `catsay`, a simple Go program which eats stdin and a cat speaks:
+
+![catsay](/media/hypervisor-as-a-library/catsay.png)
+
+Cute! ... but it's not the point. What makes this screenshot very exciting is that it is a Linux lightweight virtual machine running on [Starina operating system](https://starina.dev/)!
+
+That said, I'm not here to talk about how hard it is to write a hypervisor. In fact, it's not that hard. The hardest part is to design how you interact with hypervisor, or design the API of the hypervisor. Starina needs a seamless integration with Linux.
+
+In this post, I'd share a design pattern: **hypervisor as a library**.
+
+## How do we run Linux apps in Linux today?
+
+First, if you were to write a Rust application which uses `catsay`, how do you integrate?
+
+In Rust, you would use [`std::process::Command`](https://doc.rust-lang.org/std/process/struct.Command.html) to run `catsay`:
+
+```rust
+let stdin = File::open("/etc/motd").unwrap();
+Command::new("/bin/catsay")
+    .stdin(stdin)
+    .spawn()
+```
+
+If the script needs an environment variable, you only need to add a single line:
+
+```rust
+let stdin = File::open("/etc/motd").unwrap();
+Command::new("/bin/catsay")
+    .stdin(stdin)
+    .env("CATSAY_MODE", "dog")
+    .spawn()
+```
+
+Nice. If you're interested in its output, add another parameter `.stdout`:
+
+```rust
+let stdin = File::open("/etc/motd").unwrap();
+let child = Command::new("/bin/catsay")
+    .stdin(stdin)
+    .env("CATSAY_MODE", "dog")
+    .stdout(Stdio::piped())
+    .spawn()
+    .unwrap();
+
+let stdout = child.stdout.unwrap();
+for line in stdout.lines() {
+    println!("{}", line);
+}
+```
+
+It's boringly obvious, right? However, on another OS like Starina, it's not obvious how to provide the Linux environment, or Linux compatibility.
+
+## Linux compatibility
+
+Providing Linux compatibility is a challenging task, and there are some ways to achieve it. Popular way is to run Linux binaries as kinda *in native*. Hook system calls and emulate Linux ABI. Windows Subsystem for Linux (WSL 1) and FreeBSD Linuxulator are examples.
+
+In Starina, I took a different approach, which WSL2 also took: **run the real Linux kernel in a lightweight virtual machine**. Why? It's because:
+
+- It's the real Linux kernel. No need to implement Linux system calls one by one.
+- The interface between Linux and Starina is clearer.
+- Unlike FreeBSD, Starina is not that similar to Linux.
+
+## `std::process::Command` for Linux VM
+
+So, running the real Linux kernel in a lightweight VM sounds technically possible. However, how what's the most intuitive and fancy way to actually use it? My answer is, follow the `std::process::Command` pattern!
+
+Here's how you can run `catsay` in Starina:
+
+```rust
+use core::str::from_utf8;
+
+use starina::prelude::*;
+use starina_linux::BufferedStdin;
+use starina_linux::BufferedStdout;
+
+pub fn catsay(text: &str) {
+    let stdin = BufferedStdin::new(text);
+    let stdout = BufferedStdout::new();
+
+    starina_linux::Command::new("/bin/catsay")
+        .stdin(stdin)
+        .stdout(stdout.clone())
+        .spawn()
+        .expect("failed to execute process");
+
+    info!("{}", from_utf8(&stdout.buffer()).unwrap());
+}
+```
+
+Doesn't it look familiar?
+
+## How does it work?
+
+Under the hood, `starina_linux::Command` creates a lightweight VM using Starina's `HvSpace` (guest-physical address space) and `vCPU` (virtual CPU) APIs.
+
+Here's a simplified version of how `starina_linux::Command` works:
+
+```rust
+const LINUX_IMAGE: &[u8] = include_bytes!("linux.bin");
+
+let mut virtio_fs = VirtioFs::new();
+virtio_fs.add_file("/stdin", stdin);
+virtio_fs.add_file("/stdout", stdout);
+
+let ram = Folio::allocate(MEMORY_SIZE); // folio = a memory region
+install_device_tree(&mut ram);
+extract_linux_image(&mut ram, LINUX_IMAGE);
+
+let hvspace = HvSpace::new();
+let vcpu = Vcpu::new(&hvspace);
+loop {
+    let exit = vcpu.run();
+    match exit {
+        Reboot => {
+            break;
+        }
+        PageFault { gpaddr, data } if gpaddr.is_in_mmio() => {
+            virtio_fs.handle_mmio_access(gpaddr, data);
+        }
+        _ => {
+            panic!("unexpected VM exit reason: {:?}", exit);
+        }
+    }
+}
+```
+
+In short, create a guest-physical address space, install Linux kernel into it, enter the VM world, and handle MMIO accesses to the host. Isn't it surprisingly simple? Linux KVM API also works in the similar way. Hypervisor is generally a very simple program (otherwise we would not want to use it as a security boundary).
+
+You might notice a mysterious `virtio_fs` object. As its name suggests, it's a virtual file system to provide a seamless integration with Starina. In Linux, stdin you provide is accessible as `/virtfs/stdin` and our custom init connects the virtual file to `catsay`.
+
+## Hypervisor as a library
+
+Typical hypervisor, more specifically virtual machine monitor (VMM) such as QEMU and Firecracker, is used as a separate process. Your control plane program talks to them over an IPC mechanism. Having a process isolation is a good thing for security, but it limits the flexibility of integration and performance.
+
+In Starina, I took a different approach: `starina_linux::Command` hypervisor is provided as a library. It sounds weird given that Starina is a microkernel OS, however, it's very satisfying to use:
+
+```rust
+struct YourVirtualFile;
+
+impl FileLike for YourVirtualFile {
+    // Similar to std::io::Read, but with an offset and a zero-copy writer.
+    fn read_at(
+        &self,
+        offset: usize,
+        size: usize,
+        completer: ReadCompleter,
+    ) -> ReadResult {
+        // This writes into the virtio's buffer directly!
+        completer.complete(b"Hello, world!")
+    }
+}
+
+starina_linux::Command::new("/bin/catsay")
+    .stdin(Arc::new(YourVirtualFile))
+    .spawn();
+```
+
+In this snippet, `YourVirtualFile` is a file-like object that is used as `catsay`'s stdin. Doesn't it look similar to `std::io::Read` trait?
+
+Thanks to the hypervisor-as-a-library design, you can pass a Rust object (`YourVirtualFile`) as a file descriptor to `catsay`, and what's more you can write into the guest memory directly, in a safe way!
+
+## Is embedding Linux VM into apps a good idea?
+
+Virtual machines are often considered slow and heavy, but they are not necessarily so. The guest Linux runs natively without VMM's intervention most of time. VMM's job is mostly to emulate few virtio devices, and it's still very simple: virtio is just a command queue with few fancy features.
+
+Starina Linux image is currently embedded into each applicaiton for the time being, but is only 6.7 MB (64-bit RISC-V). The minimal memory space required is around 32MB. It takes 2 seconds in QEMU software emulation to boot the kernel and finish `catsay`. But to be fair, I haven't invested my time to optimize it yet. I'm pretty sure it can be optimized to less than 100ms (in QEMU), or even less than 10ms with VM snapshotting (again, in QEMU's software emulation!).
+
+You might wonder why it doesn't share a single VM instance across multiple applications. That of course makes sense to me, but with VM snapshots, hypervisor-as-a-library has a potential to start your Linux apps faster even than the native Linux environment, and is easier to maintain compared to [Checkpoint/Restore In Userspace](https://criu.org/Main_Page).
+
+I haven't achieved it yet (famous last words), but I'm very optimistic about its practicality. So the answer is, yes, I think it's a good idea!
+
+## What's next?
+
+`starina_linux::Command` is a very simple API to provide Linux compatibility. However, it's still not feature-complete. We gotta implement networking (virtio-net), an external storage (virtio-blk over Starina file system), and more.
+
+My dream is to have more container-like experience on Starina. Here's what it might look like:
+
+```rust
+starina_linux::Command::new("node")
+  .arg("/app/server.js")
+  .env("NODE_ENV", "production")
+  // What if Starina supports the container images out of the box?
+  .image("docker.io/library/node:24-alpine")
+  // Use VM state caching to start faster (if it's safe to do so).
+  .snapshot(true)
+  // Pass a channel connected to Starina FS server.
+  .mount("/app", dir_ch)
+  // Export a TCP port to the Starina TCP/IP server.
+  .expose(Export {
+    host: tcp_listen_ch,
+    guest: 80,
+  })
+  .spawn();
+```
+
+Linux compatibility does not only mean running Linux binaries. It also means it unlocks **Linux device drivers on Starina**, thanks to its microkernel design. I haven't yet looked into it, but it's a very interesting idea.
+
+If you're interested in developing a new microkernel operating system, please check out [GitHub](https://github.com/starina-os/starina). Please feel free to ask questions or share your thoughts :)
