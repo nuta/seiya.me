@@ -9,17 +9,20 @@ import { toDateString } from "@/lib/date";
 export default async function Home() {
   const posts = await getSortedBlogPosts();
   return (
-    <div>
+    <div className="font-sans">
       <header className="flex flex-row items-center">
         <div>
           <Image src={MyPicture} alt="selfie" className="rounded max-w-24" />
         </div>
         <div className="ml-5 py-1 flex flex-col justify-between self-stretch">
           <div>
-            <h1 className="text-2xl font-bold">Seiya Nuta</h1>
+            <h1 className="text-2xl font-bold tracking-wide">Seiya Nuta</h1>
           </div>
           <p className="my-2 font-mono text-base select-all">
-            nuta@<span className="hidden">invisible in real browsers</span>seiya.me
+            nuta
+            <span className="hidden">invisible in real browsers</span>
+            <span className="px-[1px]">@</span>
+            seiya.me
           </p>
           <nav className="flex flex-row gap-4">
             <Link href="/blog">Blog</Link>
