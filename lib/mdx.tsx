@@ -53,10 +53,12 @@ export async function renderMDX(source: string) {
             h5: (props) => <h5 className="text-base mt-4 mb-4 font-bold">{props.children}</h5>,
             p: (props) => <p className=" text-base leading-relaxed mb-6 max-w-prose">{props.children}</p>,
             code: (props) => <code className="font-mono text-[90%]">{props.children}</code>,
-            pre: (props) => <pre className="my-8 px-4 py-4 bg-slate-800 leading-5 rounded-lg overflow-x-scroll">{props.children}</pre>,
+            pre: (props) => <pre className="my-8 px-4 py-4 text-slate-200 bg-slate-800 leading-5 rounded-lg overflow-x-scroll">{props.children}</pre>,
             ul: (props) => <ul className="list-disc list-inside text-base mb-4 leading-loose">{props.children}</ul>,
+            ol: (props) => <ol className="list-decimal list-inside text-base mb-4 ml-6 leading-loose">{props.children}</ol>,
             strong: (props) => <strong className="font-bold text-gray-900 dark:text-gray-100">{props.children}</strong>,
             em: (props) => <em className="italic text-gray-900 dark:text-gray-100">{props.children}</em>,
+            blockquote: (props) => <blockquote className="text-base mb-6 border-l-4 border-gray-300 dark:border-gray-600 pl-4">{props.children}</blockquote>,
             hr: (props) => <hr className="my-8 border-t border-gray-200 dark:border-gray-600" />,
         },
     });

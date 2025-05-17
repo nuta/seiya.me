@@ -147,8 +147,8 @@ In the step, Linux kernel waits for `jiffies` to progress and it looks as if it'
 
 In RISC-V there are two approaches to implement a timer:
 
-- `sbi_set_timer`: Call the hypervisor (SBI) to set the timer.
-- `sstc` extension: A CPU extension to trigger a timer interrupt without hypervisor's help.
+- **`sbi_set_timer`:** Call the hypervisor (SBI) to set the timer.
+- **`sstc` extension:** A CPU extension to trigger a timer interrupt without hypervisor's help.
 
 This step is also the first time I needed to inject interrupts into the guest. While RISC-V spec is clean, but I was totally lost with how to do it. Setting `hideleg` was what I needed to do, but I was confused by RISC-V Advanced Interrupt Architecture, which extends the RISC-V interrupt handling.
 
@@ -160,15 +160,41 @@ Once I enabled `sstc` extension and implemented interrupt handling correctly, th
 
 ## Step 8: MMIO support
 
-> A guest physical address written to htval is shifted right by 2 bits to accommodate addresses
-wider than the current XLEN
+Linux booted successfully on Starina's hypervisor. The next step is to provide devices. In RISC-V, as in other architectures, devices are mapped to physical addresses (memory-mapped I/O). Devices need to be emulated are:
 
-> htinst could be compressed instruction
+- **An interrupt controller.** The guest kernel needs it to read pending interrupts, and acknowledge them. PLIC in RISC-V.
+- **Disk device:** Where the root filesystem is stored. Virtio-blk is a popular choice.
+- **Network device:** For networking. Virtio-net is the most popular choice.
+
+In hypervisor, MMIO is implemented by *not* mapping anything at the address range. That is, everytime the guest tries to access the address range:
+
+1. The CPU tries to read/write a MMIO address, but it's not mapped. Trigger a guest page fault.
+2. The hypervisor checks if the address range is a MMIO address.
+3. Decode the instruction to determine destination/source registers, and the access width.
+4. Emulate the MMIO operation.
+5. If it's a read, write the value to the register.
+6. Advance the program counter to the next instruction, and resume the guest.
+
+Doesn't it sound a bit hacky? In MMIO, hypervisor behaves like a CPU interpreter. Fortunately, RISC-V is very simple and gives us summary of the instruction in `htinst` CSR. In x86-64, ... good luck!
+
+For future RISC-V hypervisor developers, here are few pitfalls I encountered:
+
+- A guest physical address written to `htval` is shifted right by 2 bits. You'll see a weird address if you forget this.
+- `htinst` could be compressed instruction. This means the instruction width is not always 4 bytes, but sometimes 2 bytes.
 
 ## Step 9: Virtio-fs
 
+This is the last step of this post. While virito-blk is a typical choise to provide the root filesystem, I chose something different: virtio-fs.
+
+Why? Because it allows more seamless integration with Starina. I plan to write another post about the integration, but in short, Starina provides some virtual files to the guest.
+
+Virtio-fs is a virtual filesystem over Virtio. More specifically, it uses FUSE (Filesystem in Userspace) protocol to communicate with the guest kernel.
+
+I have nothing to say about this step because we've finished the hypervisor-specific steps already! Design a good virtio library, implement the virtio-fs emulation on top of it, and you're done:
+
 ![virtio-fs](/media/riscv-hypervisor/hello-from-virtio-fs.png)
 
+Phew, that's it!
 
 ## Tip: Debugging both hypervisor/guest worlds
 
@@ -188,4 +214,4 @@ And look! You're seeing the guest's kernel stack trace!
 
 ![gdb](/media/riscv-hypervisor/you-can-attach-gdb.png)
 
-BTW, this is why I haven't yet implemented stack traces in Starina: you just need to attach the GDB and type `bt`.
+This is why I haven't yet implemented stack traces in Starina: you just need to attach the GDB and type `bt`.
