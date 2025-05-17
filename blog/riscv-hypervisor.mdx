@@ -3,7 +3,7 @@ title: Implementing a RISC-V Hypervisor
 date: 2025-05-17
 ---
 
-To implement a seamless Linux integration into Starina, I decided to go with a Linux lightweight VM approach similar to WSL2. This means I need to implement a hypervisor that can run Linux.
+To implement a seamless Linux integration into [Starina](https://github.com/starina-os/starina), I decided to go with a Linux lightweight VM approach similar to WSL2. This means I need to implement a hypervisor that can run Linux.
 
 I had [implemented an Intel VT-x based hypervisor](/blog/implementing-hypervisor-on-resea) before, but this time I wanted to try something different: RISC-V H-extension based hypervisor!
 
@@ -127,9 +127,11 @@ ffffffff801cacf0:	0187979b          	slliw	a5,a5,0x18
 
 ## Step 5: Device Tree
 
-In RISC-V, we need to provide a device tree, the tree structure defining what devices are available in the computer.
+In RISC-V, we need to provide a device tree, a tree data structure defining what devices are available in the computer.
 
-[vm-fdt](https://docs.rs/vm-fdt/latest/vm_fdt/), a device tree builder from RustVMM project (famous for Firecracker), supports no_std, so it was easy to use it in Starina.
+Fortunately, we can use a Rust crate for this: [vm-fdt](https://docs.rs/vm-fdt/latest/vm_fdt/), a device tree builder from RustVMM project (famous for Firecracker). The library supports no_std, so it was super easy to use it in Starina (thank you, thank you RustVMM folks!).
+
+To make Linux work, the device tree should include at least: free memory areas (`reg` in `device_type = memory`), and CPUs with RISC-V ISA extensions (`riscv,isa-extensions`).
 
 ## Step 6: `rdtime` support
 
