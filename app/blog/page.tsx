@@ -28,7 +28,7 @@ export default async function BlogIndex() {
                         <span className="text-sm gray-text mr-3 tabular-nums w-[100px] md:text-right">
                             {toDateString(post.frontmatter.date)}
                         </span>
-                        <Link href={`/blog/${post.slug}`} prefetch={false}>{post.frontmatter.title}</Link>
+                        <Link href={`/blog/${post.slug}`}>{post.frontmatter.title}</Link>
                     </li>
                 ))}
             </ul>
