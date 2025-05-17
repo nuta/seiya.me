@@ -9,7 +9,7 @@ import { toDateString } from "@/lib/date";
 export default async function Home() {
   const posts = await getSortedBlogPosts();
   return (
-    <div className="font-sans">
+    <div>
       <header className="flex flex-row items-center">
         <div>
           <Image src={MyPicture} alt="selfie" className="rounded max-w-24" />
@@ -31,7 +31,7 @@ export default async function Home() {
       <main className="my-12">
         <section className="mt-12">
           <h2 className="mb-2 text-2xl font-bold">Projects</h2>
-          <ul className="space-y-2">
+          <ul className="space-y-4">
             <li>
               <Link href="https://github.com/starina-os/starina" prefetch={false} className="font-bold">Starina</Link>
               : A modern, general-purpose, and microkernel-based operating system.
@@ -45,7 +45,7 @@ export default async function Home() {
 
         <section className="mt-8">
           <h2 className="mb-2 text-2xl font-bold">Publications</h2>
-          <ul className="space-y-2">
+          <ul className="space-y-4">
             <li>
               <Link href="https://github.com/nuta/microkernel-book" prefetch={false} className="font-bold">Design and Implementation of Microkernels</Link>
               : A comprehensive guide that delves into the world of microkernels including real-world microkernels (seL4, MINIX3, and Mach), and
@@ -68,7 +68,7 @@ export default async function Home() {
               </Link>
             </span>
           </h2>
-          <ul className="list-none space-y-2">
+          <ul className="list-none">
             {posts.map((post) => (
               <li key={post.slug} className="mb-1 flex flex-col md:flex-row md:items-end">
                 <span className="text-sm gray-text mr-3 tabular-nums w-[100px] md:text-right">

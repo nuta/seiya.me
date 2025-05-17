@@ -5,8 +5,8 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
-    @apply dark:bg-gray-950 dark:text-gray-300;
+    font-family: 'Verdana', -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
+    @apply text-gray-900 dark:bg-gray-950 dark:text-gray-300;
 }
 
 h1, h2, h3, h4, h5, h6 {

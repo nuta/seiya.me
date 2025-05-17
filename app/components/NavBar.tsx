@@ -25,7 +25,7 @@ export default function Navbar() {
       className="flex flex-row items-start mb-8"
     >
       {navItems.map((item) => (
-        <Link key={item.href} href={item.href} prefetch={item.prefetch} className="py-1 pr-6">
+        <Link key={item.href} href={item.href} prefetch={item.prefetch} className="py-1 pr-8">
           {item.label}
         </Link>
       ))}
