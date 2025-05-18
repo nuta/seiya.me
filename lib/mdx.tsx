@@ -7,6 +7,7 @@ import { readFileSync } from "node:fs";
 import sizeOf from "image-size";
 import Image from "next/image";
 import Link from "next/link";
+import remarkGfm from "remark-gfm";
 
 function MyImage(props: Record<string, any>) {
     const src = props.src;
@@ -37,6 +38,9 @@ export async function renderMDX(source: string) {
         options: {
             parseFrontmatter: true,
             mdxOptions: {
+                remarkPlugins: [
+                    remarkGfm,
+                ],
                 rehypePlugins: [
                     [rehypePrettyCode, {
                         theme: "github-dark",
@@ -60,6 +64,11 @@ export async function renderMDX(source: string) {
             em: (props) => <em className="italic text-gray-900 dark:text-gray-100">{props.children}</em>,
             blockquote: (props) => <blockquote className="text-base mb-6 border-l-4 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 pl-6 italic py-2">{props.children}</blockquote>,
             hr: (props) => <hr className="my-10 border-t border-gray-300 dark:border-gray-700" />,
+            table: (props) => <table className="my-6 table-auto border-collapse border border-gray-300 dark:border-gray-700">{props.children}</table>,
+            th: (props) => <th className="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-400">{props.children}</th>,
+            td: (props) => <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{props.children}</td>,
+            tr: (props) => <tr className="border-t border-gray-300 dark:border-gray-700">{props.children}</tr>,
+            thead: (props) => <thead className="bg-gray-50 dark:bg-gray-900">{props.children}</thead>,
         },
     });
 
