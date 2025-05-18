@@ -1,5 +1,5 @@
 import NavBar from "@/app/components/NavBar";
-import { getBlogPosts, getBlogPostBySlug } from "@/lib/blog";
+import { getBlogPostBySlug, type BlogPost, getBlogPosts } from "@/lib/blog";
 import type { Metadata } from 'next';
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -48,9 +48,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 export default async function Post({ params }: { params: Promise<{ slug: string }> }) {
-    const post = await getBlogPostBySlug((await params).slug);
-    if (!post) {
-        notFound();
+    let post: BlogPost;
+    try {
+        post = await getBlogPostBySlug((await params).slug);
+    } catch (err) {
+        if (err instanceof Error && (err as any).code === "ENOENT") {
+            notFound();
+        }
+        throw err;
     }
 
     return (
