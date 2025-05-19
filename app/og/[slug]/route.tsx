@@ -8,6 +8,21 @@ export async function generateStaticParams(): Promise<{ params: { slug: string }
     }));
 }
 
+async function loadGoogleFont (font: string, text: string) {
+    const url = `https://fonts.googleapis.com/css2?family=${font.replace(" ", "+")}:wght@400;600;700;800&text=${encodeURIComponent(text)}`
+    const css = await (await fetch(url)).text()
+    const resource = css.match(/src: url\((.+)\) format\('(opentype|truetype)'\)/)
+   
+    if (resource) {
+      const response = await fetch(resource[1])
+      if (response.status == 200) {
+        return await response.arrayBuffer()
+      }
+    }
+   
+    throw new Error('failed to load font data')
+}
+  
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
     const slug = (await params).slug;
     let post: BlogPost;
@@ -31,8 +46,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: "white",
-                border: "12px solid #000",
+                border: "30px solid #7DB3F8",
+                borderBottom: "30px solid #695653",
+                backgroundColor: "#fefefe",
                 padding: "40px",
             }}
         >
@@ -48,8 +64,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
                 <h1
                     style={{
                         fontSize: "80px",
-                        fontWeight: "bold",
-                        color: "#000",
+                        fontWeight: 800,
+                        color: "#333",
                         textAlign: "center",
                         margin: "0",
                         lineHeight: 1.2,
@@ -63,13 +79,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        marginTop: "40px",
+                        marginTop: "50px",
                     }}
                 >
                     <p
                         style={{
-                            fontSize: "32px",
-                            color: "#666",
+                            fontSize: "35px",
+                            fontWeight: "bold",
+                            color: "#6a6a6a",
                             textAlign: "center",
                         }}
                     >
