@@ -5,23 +5,17 @@ const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
 function parseDate(page: BlogPost): Date {
   if (typeof page.frontmatter.date !== "string") {
-    throw new Error(
-      `${page.slug}: Missing "date" field in the front matter`,
-    );
+    throw new Error(`${page.slug}: Missing "date" field in the front matter`);
   }
 
   if (!page.frontmatter.date.match(DATE_REGEX)) {
-    throw new Error(
-      `${page.slug}: Invalid "date" value - must be YYYY-MM-DD`,
-    );
+    throw new Error(`${page.slug}: Invalid "date" value - must be YYYY-MM-DD`);
   }
 
   return new Date(page.frontmatter.date);
 }
 
-function generateFeed(
-  pages: BlogPost[],
-): string {
+function generateFeed(pages: BlogPost[]): string {
   const feed = new Feed({
     title: "seiya.me",
     id: "https://seiya.me",
@@ -29,7 +23,7 @@ function generateFeed(
     copyright: "Seiya Nuta",
     author: {
       name: "Seiya Nuta",
-    }
+    },
   });
 
   const sortedPages = pages.sort((a, b) => {
@@ -61,12 +55,12 @@ function generateFeed(
 export const dynamic = "force-static";
 
 export const GET = async (req: Request) => {
-  const pages = Object.values(await getBlogPosts())
-  const feed = generateFeed(pages)
+  const pages = Object.values(await getBlogPosts());
+  const feed = generateFeed(pages);
   return new Response(feed, {
     headers: {
       "Content-Type": "application/xml",
       "Cache-Control": "public, max-age=3600",
     },
-  })
-}
+  });
+};

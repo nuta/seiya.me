@@ -1,38 +1,48 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
-    --text-base: 17px;
+  --text-base: 17px;
 }
 
 body {
-    font-family: 'Verdana', -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
-    @apply text-gray-900 dark:bg-gray-950 dark:text-gray-300;
+  font-family:
+    "Verdana",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Hiragino Sans",
+    sans-serif;
+  @apply text-gray-900 dark:bg-gray-950 dark:text-gray-300;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    @apply font-bold text-gray-800 dark:text-gray-200;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-bold text-gray-800 dark:text-gray-200;
 }
 
 .gray-text {
-    @apply text-gray-500 dark:text-gray-300;
+  @apply text-gray-500 dark:text-gray-300;
 }
 
 a {
-    @apply text-sky-600 dark:text-sky-400 ;
+  @apply text-sky-600 dark:text-sky-400;
 }
 
 a:visited {
-    @apply text-fuchsia-600 dark:text-fuchsia-400;
+  @apply text-fuchsia-600 dark:text-fuchsia-400;
 }
 
 a:hover {
-    @apply text-sky-800 dark:text-sky-300;
+  @apply text-sky-800 dark:text-sky-300;
 }
 
 a:active {
-    @apply text-red-800 dark:text-red-400;
+  @apply text-red-800 dark:text-red-400;
 }
 
 code:not(pre code) {
-    @apply select-all;
+  @apply select-all;
 }

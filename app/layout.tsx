@@ -1,7 +1,7 @@
-import './global.css';
+import "./global.css";
 import type { Metadata } from "next";
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "Seiya Nuta",
@@ -25,9 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="mx-auto max-w-2xl w-full py-8 px-4">
-        <main>
-          {children}
-        </main>
+        <main>{children}</main>
         <Analytics />
         <SpeedInsights />
       </body>
