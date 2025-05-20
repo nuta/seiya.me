@@ -160,6 +160,8 @@ In this snippet, `YourVirtualFile` is a file-like object that is used as `catsay
 
 Thanks to the hypervisor-as-a-library design, you can pass a Rust object (`YourVirtualFile`) to `catsay` transparently, and what's more you can write into the guest memory directly, in a safe way!
 
+To put it differently, virtualization is not only for emulating hardwares to run an existing OS as it is, but also for **designing how you interact with the guest OS** through clear interfaces like Virtio. In hypervisor-as-a-library, you should consider the guest OS as a library. Well then, how do you design the library API?
+
 ## Is embedding Linux VM into apps a good idea?
 
 Virtual machines are often considered slow and heavy, but they are not necessarily so. The guest Linux runs natively without VMM's intervention most of time. VMM's job is to emulate few virtio devices, and it's still very simple: virtio is just a command queue with interrupts.
