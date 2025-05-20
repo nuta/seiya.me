@@ -46,3 +46,9 @@ a:active {
 code:not(pre code) {
   @apply select-all;
 }
+
+[data-highlighted-line] {
+  width: 100%;
+  display: inline-block;
+  background-color: rgba(230, 240, 250, 0.14);
+}
