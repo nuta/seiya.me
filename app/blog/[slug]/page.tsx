@@ -1,5 +1,10 @@
 import NavBar from "@/app/components/NavBar";
-import { getBlogPostBySlug, type BlogPost, getBlogPosts } from "@/lib/blog";
+import {
+  getBlogPostBySlug,
+  type BlogPost,
+  getBlogPosts,
+  PostNotFoundError,
+} from "@/lib/blog";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -24,9 +29,14 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const slug = (await params).slug;
-  const post = await getBlogPostBySlug((await params).slug);
-  if (!post) {
-    notFound();
+  let post: BlogPost;
+  try {
+    post = await getBlogPostBySlug(slug);
+  } catch (err) {
+    if (err instanceof PostNotFoundError) {
+      notFound();
+    }
+    throw err;
   }
 
   const ogImageUrl = `https://seiya.me/og/${slug}`;
@@ -63,7 +73,7 @@ export default async function Post({
   try {
     post = await getBlogPostBySlug((await params).slug);
   } catch (err) {
-    if (err instanceof Error && (err as any).code === "ENOENT") {
+    if (err instanceof PostNotFoundError) {
       notFound();
     }
     throw err;

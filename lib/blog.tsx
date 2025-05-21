@@ -53,6 +53,12 @@ export async function getSortedBlogPosts(): Promise<BlogPost[]> {
 
 let cachedPosts: Map<Slug, { hash: string; post: BlogPost }> = new Map();
 
+export class PostNotFoundError extends Error {
+  constructor(slug: Slug) {
+    super(`Blog post ${slug} not found`);
+  }
+}
+
 export async function getBlogPostBySlug(slug: Slug): Promise<BlogPost> {
   const mdxPath = path.join(process.cwd(), "blog", `${slug}.mdx`);
   const source = await fs.readFile(mdxPath, "utf-8");
@@ -67,6 +73,10 @@ export async function getBlogPostBySlug(slug: Slug): Promise<BlogPost> {
   try {
     rendered = await renderMDX(source);
   } catch (err) {
+    if (err instanceof Error && "code" in err && err.code === "ENOENT") {
+      throw new PostNotFoundError(slug);
+    }
+
     throw new Error(`Error rendering blog post ${mdxPath}: ${err}`);
   }
 

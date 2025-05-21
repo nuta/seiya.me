@@ -1,4 +1,9 @@
-import { BlogPost, getBlogPostBySlug, getBlogPosts } from "@/lib/blog";
+import {
+  BlogPost,
+  getBlogPostBySlug,
+  getBlogPosts,
+  PostNotFoundError,
+} from "@/lib/blog";
 import { ImageResponse } from "next/og";
 
 export async function generateStaticParams(): Promise<
@@ -36,7 +41,7 @@ export async function GET(
   try {
     post = await getBlogPostBySlug(slug);
   } catch (e) {
-    if (e instanceof Error && (e as any).code === "ENOENT") {
+    if (e instanceof PostNotFoundError) {
       return new Response("not found", { status: 404 });
     }
 
