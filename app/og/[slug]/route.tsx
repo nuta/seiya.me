@@ -15,8 +15,8 @@ export async function generateStaticParams(): Promise<
   }));
 }
 
-async function loadGoogleFont(font: string, text: string) {
-  const url = `https://fonts.googleapis.com/css2?family=${font.replace(" ", "+")}:wght@400;600;700;800&text=${encodeURIComponent(text)}`;
+async function loadGoogleFont(font: string, weight: number) {
+  const url = `https://fonts.googleapis.com/css2?family=${font.replace(" ", "+")}:wght@${weight}`;
   const css = await (await fetch(url)).text();
   const resource = css.match(
     /src: url\((.+)\) format\('(opentype|truetype)'\)/,
@@ -49,6 +49,9 @@ export async function GET(
   }
 
   const title = post.frontmatter.title;
+  const montserratBold = await loadGoogleFont("Montserrat", 800);
+  const montserratSemiBold = await loadGoogleFont("Montserrat", 600);
+  
   return new ImageResponse(
     (
       <div
@@ -57,61 +60,69 @@ export async function GET(
           width: "100%",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          alignItems: "flex-start",
           justifyContent: "center",
-          border: "30px solid #7DB3F8",
-          borderBottom: "30px solid #695653",
-          backgroundColor: "#fefefe",
-          padding: "40px",
+          background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
+          padding: "80px",
+          fontFamily: "Montserrat",
         }}
       >
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
+            alignItems: "flex-start",
             justifyContent: "center",
             width: "100%",
+            maxWidth: "900px",
           }}
         >
           <h1
             style={{
-              fontSize: "80px",
+              fontSize: title.length > 20 ? "60px" : "80px",
               fontWeight: 800,
-              color: "#333",
-              textAlign: "center",
-              margin: "0",
-              lineHeight: 1.2,
+              color: "#ffffff",
+              textAlign: "left",
+              margin: "0 0 100px 0",
+              lineHeight: 1.0,
+              fontFamily: "Montserrat",
             }}
           >
             {title}
           </h1>
 
-          <div
+          <p
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginTop: "50px",
+              fontSize: "25px",
+              fontWeight: 600,
+              color: "rgba(255, 255, 255, 0.8)",
+              textAlign: "left",
+              margin: "0",
+              fontFamily: "Montserrat",
             }}
           >
-            <p
-              style={{
-                fontSize: "35px",
-                fontWeight: "bold",
-                color: "#6a6a6a",
-                textAlign: "center",
-              }}
-            >
-              seiya.me
-            </p>
-          </div>
+            seiya.me/blog/{slug}
+          </p>
         </div>
       </div>
     ),
     {
       width: 1200,
       height: 630,
+      fonts: [
+        {
+          name: "Montserrat",
+          data: montserratBold,
+          style: "normal",
+          weight: 800,
+        },
+        {
+          name: "Montserrat",
+          data: montserratSemiBold,
+          style: "normal", 
+          weight: 600,
+        },
+      ],
     },
   );
 }
