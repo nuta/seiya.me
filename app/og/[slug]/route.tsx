@@ -83,8 +83,8 @@ export async function GET(
               fontWeight: 800,
               color: "#ffffff",
               textAlign: "left",
-              margin: "0 0 120px 0",
-              lineHeight: 1.2,
+              margin: "0 0 170px 0",
+              lineHeight: 1.3,
               fontFamily: "Montserrat",
             }}
           >
