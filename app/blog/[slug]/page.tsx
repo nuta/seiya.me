@@ -46,6 +46,8 @@ export async function generateMetadata({
     openGraph: {
       title: post.frontmatter.title,
       type: "article",
+      url: `https://seiya.me/blog/${slug}`,
+      siteName: "seiya.me",
       publishedTime: post.frontmatter.date,
       images: [
         {
@@ -59,7 +61,14 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title: post.frontmatter.title,
-      images: [ogImageUrl],
+      description: post.frontmatter.title,
+      creator: "@seiyanuta",
+      images: [
+        {
+          url: ogImageUrl,
+          alt: post.frontmatter.title,
+        },
+      ],
     },
   };
 }

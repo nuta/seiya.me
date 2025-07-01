@@ -79,12 +79,12 @@ export async function GET(
         >
           <h1
             style={{
-              fontSize: title.length > 20 ? "60px" : "80px",
+              fontSize: title.length > 20 ? "65px" : "85px",
               fontWeight: 800,
               color: "#ffffff",
               textAlign: "left",
-              margin: "0 0 100px 0",
-              lineHeight: 1.0,
+              margin: "0 0 120px 0",
+              lineHeight: 1.2,
               fontFamily: "Montserrat",
             }}
           >
