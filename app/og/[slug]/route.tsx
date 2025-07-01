@@ -51,7 +51,7 @@ export async function GET(
   const title = post.frontmatter.title;
   const montserratBold = await loadGoogleFont("Montserrat", 800);
   const montserratSemiBold = await loadGoogleFont("Montserrat", 600);
-  
+
   return new ImageResponse(
     (
       <div
@@ -93,9 +93,9 @@ export async function GET(
 
           <p
             style={{
-              fontSize: "25px",
+              fontSize: "30px",
               fontWeight: 600,
-              color: "rgba(255, 255, 255, 0.8)",
+              color: "rgba(255, 255, 255, 0.85)",
               textAlign: "left",
               margin: "0",
               fontFamily: "Montserrat",
@@ -119,7 +119,7 @@ export async function GET(
         {
           name: "Montserrat",
           data: montserratSemiBold,
-          style: "normal", 
+          style: "normal",
           weight: 600,
         },
       ],
