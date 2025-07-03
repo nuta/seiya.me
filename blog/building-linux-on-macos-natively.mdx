@@ -5,7 +5,9 @@ layout: blog
 lang: en
 ---
 
-I've recently added a Linux compatibility layer to [Starina operating system](https://starina.dev) based on a lightweight VM approach similar to WSL2. It means I need to build the genuine Linux kernel on my daily driver: macOS.
+I've recently added a Linux compatibility layer to [Starina operating system](https://starina.dev) based on a lightweight VM approach similar to WSL2.
+
+I can cross-compile its init program with Cargo. I can prepare a container image contents using [skopeo](https://github.com/containers/skopeo). However, I need to build the genuine Linux kernel, preferably on my daily driver: macOS.
 
 The most common way to build Linux kernel on macOS would be using Docker Desktop, and that works fine. I know nobody need to build on macOS natively, but it looked possible - there are 2 previous attempts before ([1](https://www.phoronix.com/news/Linux-Compile-On-macOS) and [2](https://www.phoronix.com/news/Building-Linux-Kernel-macOS-Hos)).
 
@@ -16,7 +18,6 @@ TL;DR: It works. Use [this patch](https://github.com/starina-os/starina/blob/d09
 ## `make` is too old
 
 First of all, I need to generate a minimal kernel configuration, and I got the following error:
-
 
 ```
 $ make ARCH=riscv allnoconfig
@@ -38,7 +39,7 @@ $ gmake ARCH=riscv allnoconfig
   HOSTCC  scripts/kconfig/symbol.o
   HOSTCC  scripts/kconfig/util.o
   HOSTLD  scripts/kconfig/conf
-ld: unknown options: --version 
+ld: unknown options: --version
 ld: unknown linker
 scripts/Kconfig.include:57: Sorry, this linker is not supported.
 ```
@@ -102,7 +103,7 @@ scripts/sorttable.c:27:10: fatal error: 'elf.h' file not found
 Fortunately, Homebrew saved me again. The `libelf` package provides the ELF definitions I want:
 
 ```c
-// scripts/macos-include/elf.h 
+// scripts/macos-include/elf.h
 #pragma once
 #include <libelf/gelf.h>
 
