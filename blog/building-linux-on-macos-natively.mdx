@@ -11,6 +11,8 @@ The most common way to build Linux kernel on macOS would be using Docker Desktop
 
 Tested with Linux version 6.12.34 and macOS version 15.5 (Sequoia). RISC-V is chosen here because Starina OS supports it, and it's a good example of cross compilation.
 
+TL;DR: It works. Use [this patch](https://github.com/starina-os/starina/blob/d095696115307e72eba9fe9682c2d837d3484bb0/linux/building-linux-on-macos.patch).
+
 ## `make` is too old
 
 First of all, I need to generate a minimal kernel configuration, and I got the following error:
