@@ -68,7 +68,7 @@ export async function renderMDX(source: string) {
         </Link>
       ),
       h2: (props) => (
-        <h2 className="font-sans text-2xl font-bold mt-14 mb-6 pb-1 border-b border-gray-300 dark:border-gray-700">
+        <h2 className="font-sans text-2xl font-bold mt-10 mb-6 pb-1 border-b border-gray-300 dark:border-gray-700">
           {props.children}
         </h2>
       ),
