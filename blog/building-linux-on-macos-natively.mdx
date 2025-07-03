@@ -1,0 +1,261 @@
+---
+title: Building Linux kernel on macOS natively
+date: 2025-07-03
+layout: blog
+lang: en
+---
+
+I've recently added a Linux compatibility layer to [Starina operating system](https://starina.dev) based on a lightweight VM approach similar to WSL2. It means I need to build the genuine Linux kernel on my daily driver: macOS.
+
+The most common way to build Linux kernel on macOS would be using Docker Desktop, and that works fine. I know nobody need to build on macOS natively, but it looked possible - there are 2 previous attempts before ([[1]](https://www.phoronix.com/news/Linux-Compile-On-macOS) and [2](https://www.phoronix.com/news/Building-Linux-Kernel-macOS-Hos)).
+
+Tested with Linux version 6.12.34 and macOS version 15.5 (Sequoia). RISC-V is chosen here because Starina OS supports it, and it's a good example of cross compilation.
+
+## `make` is too old
+
+First of all, I need to generate a minimal kernel configuration, and I got the following error:
+
+
+```
+$ make ARCH=riscv allnoconfig
+Makefile:15: *** GNU Make >= 4.0 is required. Your Make version is 3.81.  Stop.
+```
+
+This is a typical issue for macOS users. GNU packages are shipped with macOS, but the version is typically very old. Fortunately, Homebrew can help us. Install `make` package from Homebrew and use the binary with `gmake`:
+
+```
+$ brew install make
+$ gmake ARCH=riscv allnoconfig
+  HOSTCC  scripts/kconfig/conf.o
+  HOSTCC  scripts/kconfig/confdata.o
+  HOSTCC  scripts/kconfig/expr.o
+  HOSTCC  scripts/kconfig/lexer.lex.o
+  HOSTCC  scripts/kconfig/menu.o
+  HOSTCC  scripts/kconfig/parser.tab.o
+  HOSTCC  scripts/kconfig/preprocess.o
+  HOSTCC  scripts/kconfig/symbol.o
+  HOSTCC  scripts/kconfig/util.o
+  HOSTLD  scripts/kconfig/conf
+ld: unknown options: --version 
+ld: unknown linker
+scripts/Kconfig.include:57: Sorry, this linker is not supported.
+```
+
+Oof, another error.
+
+## Clang Built Linux
+
+The error means that `ld` on macOS is not what Linux expects. The same goes for `gcc`, which is actually clang.
+
+```
+$ gcc --version
+Apple clang version 17.0.0 (clang-1700.0.13.5)
+```
+
+The fix is to use LLVM linker, binutils, and clang. While we usually use GCC + GNU binutils to build the kernel, clang + LLVM tools are also supported thanks to [Clang Built Linux](https://clangbuiltlinux.github.io/) effort:
+
+```
+$ brew install llvm lld
+$ export PATH="$(brew --prefix llvm)/bin:$(brew --prefix lld)/bin:$PATH"
+$ gmake ARCH=riscv LLVM=1 allnoconfig
+  HOSTCC  scripts/basic/fixdep
+  HOSTCC  scripts/kconfig/conf.o
+  HOSTCC  scripts/kconfig/confdata.o
+  HOSTCC  scripts/kconfig/expr.o
+  HOSTCC  scripts/kconfig/lexer.lex.o
+  HOSTCC  scripts/kconfig/menu.o
+  HOSTCC  scripts/kconfig/parser.tab.o
+  HOSTCC  scripts/kconfig/preprocess.o
+  HOSTCC  scripts/kconfig/symbol.o
+  HOSTCC  scripts/kconfig/util.o
+  HOSTLD  scripts/kconfig/conf
+#
+# configuration written to .config
+#
+```
+
+It works! `menuconfig` is now also working nicely on macOS:
+
+![menuconfig](/media/building-linux-on-macos-natively/menuconfig.png)
+
+## Missing headers in `scripts`
+
+Generating the kernel config is just the beginning. Now, let's build the kernel:
+
+```
+$ gmake ARCH=riscv LLVM=1 -j8 Image
+```
+
+No, it doesn't work:
+
+```
+scripts/sorttable.c:27:10: fatal error: 'elf.h' file not found
+   27 | #include <elf.h>
+      |          ^~~~~~~
+1 error generated.
+```
+
+`elf.h` is included in [libc packages](https://packages.ubuntu.com/search?searchon=contents&keywords=elf.h&mode=exactfilename&suite=plucky&arch=any#:~:text=dev%20%5Barmhf%5D-,/usr/include/elf.h,-libc6%2Ddev), but Apple's libc doesn't have it. It makes sense because macOS is a Mach-O world.
+
+Fortunately, Homebrew saved me again. The `libelf` package provides the ELF definitions I want:
+
+```c
+// scripts/macos-include/elf.h 
+#pragma once
+#include <libelf/gelf.h>
+
+#define STT_SPARC_REGISTER 3
+#define R_386_32 1
+#define R_386_PC32 2
+#define R_MIPS_HI16 5
+#define R_MIPS_LO16 6
+#define R_MIPS_26 4
+#define R_MIPS_32 2
+#define R_ARM_ABS32 2
+#define R_ARM_REL32 3
+#define R_ARM_PC24 1
+#define R_ARM_CALL 28
+#define R_ARM_JUMP24 29
+#define R_ARM_THM_JUMP24 30
+#define R_ARM_THM_PC22 10
+#define R_ARM_MOVW_ABS_NC 43
+#define R_ARM_MOVT_ABS 44
+#define R_ARM_THM_MOVW_ABS_NC 47
+#define R_ARM_THM_MOVT_ABS 48
+#define R_ARM_THM_JUMP19 51
+#define R_AARCH64_ABS64 257
+#define R_AARCH64_PREL64 260
+```
+
+I added a few more `#define`s because its upstream has not been maintained in recent years ([GitHub](https://github.com/avrdudes/avrdude/issues/1653)) and is missing those definitions.
+
+Now, let's try with the `macos-include` include path and `libelf`:
+
+```
+$ gmake ARCH=riscv LLVM=1 \
+  HOSTCFLAGS="-Iscripts/macos-include -I $(brew --prefix libelf)/include" \
+  -j8 Image
+```
+
+And here's the next one.
+
+```
+scripts/mod/modpost.h:2:10: fatal error: 'byteswap.h' file not found
+    2 | #include <byteswap.h>
+      |          ^~~~~~~~~~~~
+```
+
+The fix is easy. Clang provides builtin functions for byte swapping ([documentation](https://clang.llvm.org/docs/LanguageExtensions.html#intrinsics-support-within-constant-expressions)):
+
+```c
+// scripts/macos-include/byteswap.h
+#pragma once
+#define bswap_16 __builtin_bswap16
+#define bswap_32 __builtin_bswap32
+#define bswap_64 __builtin_bswap64
+```
+
+## Incompatible `uuid_t`
+
+The next compilation error is about `uuid_t`:
+
+```
+scripts/mod/file2alias.c:45:3: error: typedef redefinition with different types ('struct uuid_t' vs '__darwin_uuid_t' (aka 'unsigned char[16]'))
+   45 | } uuid_t;
+```
+
+[Nick Desaulniers' patch](https://github.com/ClangBuiltLinux/linux/commit/f06333e29addbc3d714adb340355f471c1dfe95a#diff-e4f7da449d53f5aaf75dbfc4afb863c8d5380b6bc53463656c3ae9e5ac304c65) includes a good workaround for this. Wrap `#include "modpost.h"` in `scripts/mod/file2alias.c` with a few macros:
+
+```diff
+--- a/scripts/mod/file2alias.c
++++ b/scripts/mod/file2alias.c
+@@ -10,7 +10,10 @@
+  * of the GNU General Public License, incorporated herein by reference.
+  */
+
++#define _UUID_T
++#define uuid_t int
+ #include "modpost.h"
++#undef uuid_t
+ #include "devicetable-offsets.h"
+```
+
+## Incompatible `sed`
+
+The next one is about `__vdso_rt_sigreturn_offset`:
+
+```
+arch/riscv/kernel/signal.c:340:28: error: use of undeclared identifier '__vdso_rt_sigreturn_offset'
+  340 |         regs->ra = (unsigned long)VDSO_SYMBOL(
+      |                                   ^
+```
+
+This is because `vdso-offsets.h` generation is not working properly:
+
+```
+$ wc -l include/generated/vdso-offsets.h
+       0 include/generated/vdso-offsets.h
+```
+
+The problematic step is:
+
+```
+# VDSOSYM include/generated/vdso-offsets.h
+  llvm-nm arch/riscv/kernel/vdso/vdso.so.dbg | arch/riscv/kernel/vdso/gen_vdso_offsets.sh | LC_ALL=C sort > include/generated/vdso-offsets.h
+```
+
+Interestingly, it was caused by `sed` used in `gen_vdso_offsets.sh`. Use GNU sed (`gnu-sed` package in Homebrew) instead of macOS's `sed`:
+
+```
+export PATH="$(brew --prefix gnu-sed)/libexec/gnubin:$(brew --prefix llvm)/bin:$(brew --prefix lld)/bin:$PATH"
+```
+
+## It works!
+
+After fixing the sed incompatibility, the build went smoothly and finally I got the message I wished for:
+
+```
+$ gmake ARCH=riscv LLVM=1 HOSTCFLAGS="-Iscripts/macos-include -I $(brew --prefix libelf)/include" -j8
+  Kernel: arch/riscv/boot/Image.gz is ready
+```
+
+It worked! Yay! 🎉
+
+## It also works for AArch64
+
+Clang-built Linux is very convenient for cross compilation. You just need to change `ARCH` to `arm64` and it works:
+
+```
+$ gmake ARCH=arm64 LLVM=1 allnoconfig
+$ gmake ARCH=arm64 LLVM=1 HOSTCFLAGS="-Iscripts/macos-include -I $(brew --prefix libelf)/include" -j8
+...
+  CALL    scripts/checksyscalls.sh
+  OBJCOPY arch/arm64/boot/Image
+  GZIP    arch/arm64/boot/Image.gz
+```
+
+## Is macOS fast?
+
+Here's a clean build time comparison (M2 with 32GB RAM):
+
+| Time | macOS | Linux (Docker Desktop) |
+|------|-------|-------|
+|real | **0m33.260s** | 0m41.380s |
+|user | **2m46.959s** | 4m41.107s |
+|sys  | **0m29.956s** | 0m27.735s |
+
+As expected, macOS is faster. However, in incremental builds (`touch` a file and build again), Linux is faster:
+
+|Time | macOS | Linux (Docker Desktop) |
+|-----|-------|-------|
+|real |0m1.553s | **0m0.634s** |
+|user |0m2.531s | **0m1.397s** |
+|sys  |0m1.614s | **0m0.776s** |
+
+Why? I suspect it's because of anti-malware activities on macOS - `fork(2)` overhead could be higher, but I'm not sure. If you know more about this slowdown, please let me know!
+
+## Fixing builds is a never-ending effort
+
+I pause here because it's good enough to build the tiny kernel for Starina's Linux compatibility layer. As you enable more kernel features, you'll get yet another build error. One interesting thing is that issues come from `scripts`, not from the kernel itself. It made easy to fix and test.
+
+Fixing them is similar to adding CI to your existing project. Test, read logs, fix, and repeat. It's a never-ending effort, and it's worth it.
