@@ -61,25 +61,25 @@ export class PostNotFoundError extends Error {
 
 export async function getBlogPostBySlug(slug: Slug): Promise<BlogPost> {
   const mdxPath = path.join(process.cwd(), "blog", `${slug}.mdx`);
-  const source = await fs.readFile(mdxPath, "utf-8");
-  const hash = crypto.createHash("sha256").update(source).digest("hex");
 
-  const cached = cachedPosts.get(slug);
-  if (cached && cached.hash === hash) {
-    return cached.post;
-  }
-
-  let rendered;
+  let source: string;
   try {
-    rendered = await renderMDX(source);
+    source = await fs.readFile(mdxPath, "utf-8");
   } catch (err) {
     if (err instanceof Error && "code" in err && err.code === "ENOENT") {
       throw new PostNotFoundError(slug);
     }
 
-    throw new Error(`Error rendering blog post ${mdxPath}: ${err}`);
+    throw new Error(`Error reading blog post ${mdxPath}: ${err}`);
   }
 
+  const hash = crypto.createHash("sha256").update(source).digest("hex");
+  const cached = cachedPosts.get(slug);
+  if (cached && cached.hash === hash) {
+    return cached.post;
+  }
+
+  const rendered = await renderMDX(source);
   const post = {
     slug,
     frontmatter: rendered.frontmatter,
