@@ -12,6 +12,11 @@ const navItems = [
     prefetch: true,
   },
   {
+    label: "twitter",
+    href: "https://x.com/seiyanuta",
+    prefetch: false,
+  },
+  {
     label: "github",
     href: "https://github.com/nuta",
     prefetch: false,
