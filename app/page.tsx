@@ -3,11 +3,12 @@ import MyPicture from "./me.jpg";
 import Link from "next/link";
 import { FaRssSquare } from "react-icons/fa";
 import "./home.css";
-import { getSortedBlogPosts } from "@/lib/blog";
+import { getPosts } from "@/lib/blog";
 import { toDateString } from "@/lib/date";
 
 export default async function Home() {
-  const posts = await getSortedBlogPosts();
+  const { englishPosts, japanesePosts } = await getPosts();
+
   return (
     <div className="font-sans">
       <header className="flex flex-row items-center">
@@ -119,8 +120,9 @@ export default async function Home() {
               </Link>
             </span>
           </h2>
+
           <ul className="list-none">
-            {posts.map((post) => (
+            {englishPosts.map((post) => (
               <li
                 key={post.slug}
                 className="mb-1 flex flex-col md:flex-row md:items-end"
@@ -134,6 +136,24 @@ export default async function Home() {
               </li>
             ))}
           </ul>
+
+          {japanesePosts.length > 0 && (
+            <ul className="list-none mt-8">
+              {japanesePosts.map((post) => (
+                <li
+                  key={post.slug}
+                  className="mb-1 flex flex-col md:flex-row md:items-end"
+                >
+                  <span className="text-sm gray-text mr-3 tabular-nums w-[100px] md:text-right">
+                    {toDateString(post.frontmatter.date)}
+                  </span>
+                  <Link href={`/blog/${post.slug}`}>
+                    {post.frontmatter.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       </main>
     </div>

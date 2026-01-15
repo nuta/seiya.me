@@ -51,6 +51,16 @@ export async function getSortedBlogPosts(): Promise<BlogPost[]> {
   );
 }
 
+export async function getPosts(): Promise<{
+  englishPosts: BlogPost[];
+  japanesePosts: BlogPost[];
+}> {
+  const posts = await getSortedBlogPosts();
+  const japanesePosts = posts.filter((post) => post.frontmatter.lang === "ja");
+  const englishPosts = posts.filter((post) => post.frontmatter.lang !== "ja");
+  return { englishPosts, japanesePosts };
+}
+
 let cachedPosts: Map<Slug, { hash: string; post: BlogPost }> = new Map();
 
 export class PostNotFoundError extends Error {

@@ -1,11 +1,11 @@
-import { getSortedBlogPosts } from "@/lib/blog";
+import { getPosts } from "@/lib/blog";
 import { toDateString } from "@/lib/date";
 import Link from "next/link";
 import NavBar from "../components/NavBar";
 import { FaRssSquare } from "react-icons/fa";
 
 export default async function BlogIndex() {
-  const posts = await getSortedBlogPosts();
+  const { englishPosts, japanesePosts } = await getPosts();
 
   return (
     <>
@@ -21,8 +21,9 @@ export default async function BlogIndex() {
           </span>
         </h1>
       </header>
+
       <ul className="list-none">
-        {posts.map((post) => (
+        {englishPosts.map((post) => (
           <li
             key={post.slug}
             className="mb-1 mb-4 flex flex-col md:flex-row md:items-end"
@@ -34,6 +35,24 @@ export default async function BlogIndex() {
           </li>
         ))}
       </ul>
+
+      {japanesePosts.length > 0 && (
+        <ul className="list-none mt-12">
+          {japanesePosts.map((post) => (
+            <li
+              key={post.slug}
+              className="mb-1 mb-4 flex flex-col md:flex-row md:items-end"
+            >
+              <span className="text-sm gray-text mr-3 tabular-nums w-[100px] md:text-right">
+                {toDateString(post.frontmatter.date)}
+              </span>
+              <Link href={`/blog/${post.slug}`}>
+                {post.frontmatter.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </>
   );
 }
