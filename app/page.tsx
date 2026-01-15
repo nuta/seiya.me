@@ -26,7 +26,12 @@ export default async function Home() {
             seiya.me
           </p>
           <nav className="flex flex-row gap-4">
-            <Link href="/blog">Blog</Link>
+            <Link href="/blog" prefetch={false}>
+              Blog
+            </Link>
+            <Link href="https://x.com/seiyanuta" prefetch={false}>
+              Twitter
+            </Link>
             <Link href="https://github.com/nuta" prefetch={false}>
               GitHub
             </Link>
