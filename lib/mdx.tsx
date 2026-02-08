@@ -8,6 +8,7 @@ import sizeOf from "image-size";
 import Image from "next/image";
 import Link from "next/link";
 import remarkGfm from "remark-gfm";
+import { Tweet } from "react-tweet";
 
 function MyImage(props: Record<string, any>) {
   const src = props.src;
@@ -150,6 +151,9 @@ export async function renderMDX(source: string) {
       ),
       thead: (props) => (
         <thead className="bg-gray-50 dark:bg-gray-900">{props.children}</thead>
+      ),
+      Tweet: (props) => (
+        <Tweet {...props} />
       ),
     },
   });
