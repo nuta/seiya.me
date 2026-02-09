@@ -1,0 +1,136 @@
+---
+title: "New microkernel OS in 10 days: From zero to Google Compute Engine"
+date: 2026-02-10
+layout: blog
+lang: en
+---
+
+I took a week off to enjoy an experiment: if I gather all the knowledge and modern technologies, how would a general-purpose microkernel OS look like in 2026?
+
+My goal was to make it work on Google Compute Engine and, it's working! Visit [http://ftl.seiya.me](http://ftl.seiya.me) to see it in action.
+
+<Tweet id="2019071511278104722" />
+
+I used an LLM (GPT-5.2-Codex) to review and debug my code, not for agentic coding. This prototyping was full of open-ended questions and design decisions, where the goal is unclear to the LLM, even to me :P
+
+## Day 1
+
+The first thing is to initialize the CPU to say hello to the world. In x86-64, you need to prepare a temporary kernel stack, enable paging, and switch to the 64-bit mode.
+
+Once the CPU boots into the Rust world, do some I/O port work to unlock `println!`:
+
+<Tweet id="2015589172145541522" />
+
+x86-64 needs some more initialization steps to receive exceptions & interrupts. Without this, kernel bugs would cause reboots immediately without good error messages!
+
+<Tweet id="2015605128544575502" />
+
+The last thing for day 1 is to implement context switching between kernel threads. It's pretty simple. Just save and restore registers carefully:
+
+<Tweet id="2015731171372777736" />
+
+## Day 2
+
+FTL is a microkernel OS where OS services are implemented as isolated processes. The kernel is just a tiny runtime behind the scenes.
+
+Build a Hello World ELF executable, pack it into a tarball, let the bootloader load it, parse the tarball in the kernel, load the ELF and execute it.
+
+<Tweet id="2016031274679599608" />
+
+In FTL, process isolation is designed to be flexible, not just the user mode. For example, we could implement mechanisms like:
+
+- **User mode isolation:** The typical way to isolate processes.
+- **Rust-based isolation:** Run OS components in the kernel space safely.
+- **WebAssembly-based isolation:** A trusted JIT compiler in the kernel executes untrusted programs, like eBPF.
+- **JavaScript-based isolation:** GC-based programming languages are also memory safe. Might be fun.
+
+Rust-based isolation is a very interesting one. It uses Rust as a lightweight isolation technology. It runs a process in the kernel mode, as if it is a secure kernel module. Rust is less secure than user mode, but it's "good enough" for many use cases.
+
+## Day 3
+
+My goal is to run an HTTP server. To implement TCP/IP, we need a network device driver which sends and receives packets.
+
+I implemented virtio-net, a popular network device in virtual machines. Recent GCP instances use a different virtual network device called gVNIC, but virtio-net is still supported in some instance types, especially [e2-micro](https://docs.cloud.google.com/free/docs/free-cloud-features#compute) which you can use for free.
+
+The virtio-net device can be found and configured using PCI. It provides the base I/O port number to communicate with the virtio:
+
+<Tweet id="2016396092401975356" />
+
+To receive hardware interrupts, you need to get through the maze of x86-64 again:
+
+- You can enable interrupts in I/O APIC, but you need to search [the MP configuration table](https://en.wikipedia.org/wiki/MultiProcessor_Specification) for I/O APIC.
+- Update the corresponding IDT entry with the interrupt handler.
+- Allow interrupts by `STI` instruction.
+- Oh, you need to acknowledge the interrupt to receive the next one. It's done by writing to local APIC, which can be found in the MP configuration table.
+- By the way, modern processors provide x2APIC. You might want to use ACPI (don't be confused with APIC).
+
+... anyway, it worked:
+
+<Tweet id="2016461083469586725" />
+
+## Day 4 & 5
+
+Writing code is easy. The goal is very clear and LLMs are very good at this. The hardest part is designing the API. It defines how applications interact with the OS, and affects the performance, readability, and maintainability.
+
+I considered 10+ patterns and ended up with the following:
+
+- Asynchronous message passing with the `call` concept like [Fuchsia](https://fuchsia.dev/reference/syscalls/channel_call).
+- Introduce separate system calls for inter-process memory copies like [MINIX3](https://wiki.minix3.org/doku.php?id=developersguide:kernelapi#sys_safecopyto).
+- Completion-based asynchronous programming, without `async` Rust (i.e. write state machines explicitly).
+- Use only few pre-defined message types. Avoid IDL like [gRPC](https://grpc.io/), [MIG](https://www.gnu.org/software/hurd/microkernel/mach/mig.html), [FIDL](https://fuchsia.dev/fuchsia-src/get-started/learn/fidl/fidl).
+
+My favorite part is memory copy system calls. You can allow the receiver to read/write a part of memory while the call is in progress. This made writing OS services very straightforward.
+
+The screenshot below is an early design and the current one differs.
+
+<Tweet id="2017238898582413577" />
+
+I'll write a separate blog post about the API design.
+
+## Day 6
+
+Finally I'm satisfied with the API design. Implement it!
+
+<Tweet id="2017531986269901108" />
+
+## Day 7
+
+Implement memory copy system calls, and the completion-based event loop. Spent a lot of time on making small design decisions. 
+
+<Tweet id="2017971436565241996" />
+
+## Day 8
+
+I was very busy on Feb 2 at work. Next day, I've ported smoltcp TCP/IP stack to FTL, and spent debugging it to ... run HTTP server!
+
+<Tweet id="2018731814656094537" />
+
+Smoltcp is very portable thanks to Rust's `no_std` support, but it took much more time than I expected.
+
+## Day 9
+
+The goal is to run a web server on GCP. Why GCP? Because it provides virtio-net device and most importantly, the serial port is available. Somehow, Google provides [a guide](https://docs.cloud.google.com/compute/docs/images/create-custom) to run custom operating systems.
+
+Create a bootable disk image using `grub-mkrescue`, upload it to GCP, create a new instance, and it wrote "Hello, World!" to the serial port!
+
+<Tweet id="2019050901600977144" />
+
+## Day 10
+
+The final day. FTL worked on GCP except a nasty bug I had to fix. The GCP's DHCP server offers an IP address in /32, and it confused smoltcp and its routing table could not route packets to the gateway IP address.
+
+Fixed bugs one by one, and I witnessed my macOS talking to my OS on GCP for the first time!
+
+<Tweet id="2019071511278104722" />
+
+That's it!
+
+## What's next?
+
+I plan to continue this project to make it practical and production-ready in cloud environments. I wrote some [my thoughts](https://seiya.me/blog/rethinking-microkernels) on this before, and it's getting interesting! Here are some ideas I'm thinking about:
+
+- File system for caching, not advanced persistence. We can use separate storage services like S3 or PostgreSQL.
+- Linux binary compatibility layer, implemented as an isolated process like gVisor, but runs in the kernel space safely (not hardware-assisted virtualization).
+- Kubernetes-like declarative management. Or integrate FTL into Kubernetes ecosystem.
+
+Visit [https://github.com/nuta/ftl](https://github.com/nuta/ftl) if you're interested in FTL.
