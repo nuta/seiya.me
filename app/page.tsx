@@ -50,11 +50,11 @@ export default async function Home() {
           <ul className="space-y-4">
             <li>
               <Link
-                href="https://github.com/starina-os/starina"
+                href="https://github.com/nuta/ftl"
                 prefetch={false}
                 className="font-bold"
               >
-                Starina
+                FTL
               </Link>
               : A modern, general-purpose, and microkernel-based operating
               system.
