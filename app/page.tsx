@@ -130,7 +130,7 @@ export default async function Home() {
             {englishPosts.map((post) => (
               <li
                 key={post.slug}
-                className="mb-1 flex flex-col md:flex-row md:items-end"
+                className="mb-1 flex flex-col md:flex-row md:items-center"
               >
                 <span className="text-sm gray-text mr-3 tabular-nums w-[100px] md:text-right">
                   {toDateString(post.frontmatter.date)}
@@ -147,7 +147,7 @@ export default async function Home() {
               {japanesePosts.map((post) => (
                 <li
                   key={post.slug}
-                  className="mb-1 flex flex-col md:flex-row md:items-end"
+                  className="mb-1 flex flex-col md:flex-row md:items-center"
                 >
                   <span className="text-sm gray-text mr-3 tabular-nums w-[100px] md:text-right">
                     {toDateString(post.frontmatter.date)}
