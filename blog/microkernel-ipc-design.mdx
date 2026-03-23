@@ -1,0 +1,83 @@
+---
+title: "Designing IPC for microkernels"
+date: 2026-03-23
+layout: blog
+lang: en
+---
+
+Inter-Process Communication (IPC) is a core part of microkernels, and it defines how OS services in the userspace work together.
+
+Over the past few weeks, I had a lot of fun simplifying the IPC design for [FTL](https://github.com/nuta/ftl) to a most minimalistic form. That is, how does it look like if we make it as simple as possible?
+
+## IPC 101
+
+IPC is not something new to you. It can be seen everywhere. The most well-known one is UNIX pipes:
+
+```rs
+use nix::unistd::{pipe, read, write};
+
+// Create a pipe.
+let (read_fd, write_fd) = pipe()?;
+
+// Write to the pipe.
+write(write_fd, b"Hello, world!")?;
+
+// Read from the pipe.
+let mut buf = [0; 12];
+read(read_fd, &mut buf)?;
+```
+
+`pipe` system call returns 2 file descriptors (or *handles*): the read half and write half. Pipe is used for wiring up UNIX tools, e.g., `cat | grep`. Basically, IPC is a cross-process memory copies (`memcpy`).
+
+## Backpressure
+
+In pipes, `cat` and `grep` run asynchnously. While `cat` reads a file from a disk, `grep` can read from the pipe and do its job.
+
+Asynchronous IPC sounds cool,
+
+but what if `grep` can't keep up with `cat`'s write speed? 
+
+## Handle/capability transfer
+
+## Message passing
+
+## Interface Definiton Language
+
+
+## How not to copy memory
+
+## FTL: IPC calls
+
+```rs
+fn open(path: &[u8], opts: OpenOptions) -> Channel // open, socket, ...
+fn read(off: usize, len: usize, buf: &mut [u8]) -> usize // pread
+fn write(off: usize, buf: &[u8]) -> usize  // pwrite
+fn getattr(attr: Attr, buf: &mut [u8]) // fstat, ...
+fn setattr(attr: Attr, buf: &[u8]) -> usize // chmod, rename, ....
+fn delete(opts: DeleteOptions) -> () // unlink, shutdown ...
+```
+
+## FTL: On-wire format
+
+```rs
+fn send(
+    ch: &Channel,
+    info: MessageInfo, // kind + message ID + body_len
+    arg1: usize,
+    arg2: usize,
+    body: *const u8,
+    handle: Option<Handle>
+);
+```
+
+```rs
+fn recv(
+    ch: &Channel,
+    info: MessageInfo,
+    body: *mut u8,
+);
+```
+
+- NO IDL
+- Two phase receive: Sink + recv
+- 
