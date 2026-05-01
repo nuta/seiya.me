@@ -1,83 +1,43 @@
 ---
-title: "Designing IPC for microkernels"
-date: 2026-03-23
+title: "Designing microkernel IPC"
+date: 2026-05-01
 layout: blog
 lang: en
 ---
 
 Inter-Process Communication (IPC) is a core part of microkernels, and it defines how OS services in the userspace work together.
 
-Over the past few weeks, I had a lot of fun simplifying the IPC design for [FTL](https://github.com/nuta/ftl) to a most minimalistic form. That is, how does it look like if we make it as simple as possible?
+Over the past few weeks, I had a lot of fun simplifying the IPC design in [FTL operating system](https://github.com/nuta/ftl). While IPC is a simple memory copy operation between processes, you'll run into interesting problems to consider. Let's explore them through FTL's design.
 
 ## IPC 101
 
-IPC is not something new to you. It can be seen everywhere. The most well-known one is UNIX pipes:
+IPC is how processes communicate with each other. For example, pipe (e.g., `cat | grep`) is one of IPC mechanisms available on Linux. Another example is UNIX domain socket, which is commonly used as an internal service channel, exposed to the file system as a `.sock` file. IPC is, in essence, `memcpy(2)` but across processes.
 
-```rs
-use nix::unistd::{pipe, read, write};
+In microkernels, IPC is typically implemented as message passing. Each message typically contains a message type, type-specific data, and handles (file descriptors). Here's a simple IPC design:
 
-// Create a pipe.
-let (read_fd, write_fd) = pipe()?;
+```c
+// Message queue ID.
+typedef int mailbox_t;
 
-// Write to the pipe.
-write(write_fd, b"Hello, world!")?;
+// Message format.
+typedef struct {
+    int type;
+    int handles[MAX_HANDLES];
+    size_t data_len;
+    void *data;
+} message_t;
 
-// Read from the pipe.
-let mut buf = [0; 12];
-read(read_fd, &mut buf)?;
+void ipc_send(mailbox_t mbox, message_t msg);
+message_t ipc_receive(mailbox_t mbox);
 ```
 
-`pipe` system call returns 2 file descriptors (or *handles*): the read half and write half. Pipe is used for wiring up UNIX tools, e.g., `cat | grep`. Basically, IPC is a cross-process memory copies (`memcpy`).
+`ipc_send` sends a message `msg` to the mailbox `mbox`. The kernel copies the message into its internal message queue, and the destination process will receive a message by `ipc_receive`, just like a UNIX pipe.
 
-## Backpressure
+## Problem: RPC
 
-In pipes, `cat` and `grep` run asynchnously. While `cat` reads a file from a disk, `grep` can read from the pipe and do its job.
+## Problem: Eliminating memory copies
 
-Asynchronous IPC sounds cool,
+## Problem: Backpressure
 
-but what if `grep` can't keep up with `cat`'s write speed? 
+## Problem: IDL and verbose IPC stubs
 
-## Handle/capability transfer
-
-## Message passing
-
-## Interface Definiton Language
-
-
-## How not to copy memory
-
-## FTL: IPC calls
-
-```rs
-fn open(path: &[u8], opts: OpenOptions) -> Channel // open, socket, ...
-fn read(off: usize, len: usize, buf: &mut [u8]) -> usize // pread
-fn write(off: usize, buf: &[u8]) -> usize  // pwrite
-fn getattr(attr: Attr, buf: &mut [u8]) // fstat, ...
-fn setattr(attr: Attr, buf: &[u8]) -> usize // chmod, rename, ....
-fn delete(opts: DeleteOptions) -> () // unlink, shutdown ...
-```
-
-## FTL: On-wire format
-
-```rs
-fn send(
-    ch: &Channel,
-    info: MessageInfo, // kind + message ID + body_len
-    arg1: usize,
-    arg2: usize,
-    body: *const u8,
-    handle: Option<Handle>
-);
-```
-
-```rs
-fn recv(
-    ch: &Channel,
-    info: MessageInfo,
-    body: *mut u8,
-);
-```
-
-- NO IDL
-- Two phase receive: Sink + recv
-- 

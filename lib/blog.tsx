@@ -89,7 +89,13 @@ export async function getBlogPostBySlug(slug: Slug): Promise<BlogPost> {
     return cached.post;
   }
 
-  const rendered = await renderMDX(source);
+  let rendered;
+  try {
+    rendered = await renderMDX(source);
+  } catch (err) {
+    throw new Error(`Error rendering MDX for ${mdxPath}: ${err}`);
+  }
+
   const post = {
     slug,
     frontmatter: rendered.frontmatter,
