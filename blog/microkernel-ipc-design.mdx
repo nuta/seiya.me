@@ -33,11 +33,29 @@ message_t ipc_receive(mailbox_t mbox);
 
 `ipc_send` sends a message `msg` to the mailbox `mbox`. The kernel copies the message into its internal message queue, and the destination process will receive a message by `ipc_receive`, just like a UNIX pipe.
 
-## Problem: RPC
+In microkernels, OS components such as device drivers and TCP/IP stack are implemented as user-mode processes, and use this message passing mechanism to isolate them. This API looks obviously correct, it hides the difficult problems underneath.
 
-## Problem: Eliminating memory copies
+## RPC over message passing
 
-## Problem: Backpressure
+In HTTP, you send a request to a server, and the server responds with a response. Likewise, to read a file on a microkernel OS, you send a request to a file system server, and the file system server replies a message with the file data. Most of OS features work like remote procedure call (RPC).
 
-## Problem: IDL and verbose IPC stubs
+## Open/closed receive
+
+
+## Asynchronous vs. synchronous IPC
+
+
+
+## Memory copy is expensive
+
+
+## Backpressure
+
+
+## IDL and verbose IPC stubs
+
+
+
+## FTL's design
+
 
