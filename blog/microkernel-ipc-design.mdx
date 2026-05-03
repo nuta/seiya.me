@@ -173,9 +173,26 @@ That is, a message in FTL is a memory buffer pointed by `body`, 2 inlined argume
 
 ## FTL: No IDL, zero (de)serialization
 
+FTL does not use IDL. Instead, you'll use predefined 5 request types: `open`, `read`, `write`, `getattr`, and `setattr`. That's it.
 
+This is why `sys_channel_send` supports only 2 inlined arguments. As shown in the table below, message fields can fit into system call arguments, without serilizing into another message format!
+
+| info.type | arg1 | arg2 | body | info.len | handle |
+|-----------|------|------|------|--------|----|
+| open      | path ||      |      |        |
+| open reply |  | | || opened handle |
+| read      | offset | len |      |        |
+| read reply | | | data | read len | |
+| write     | offset |  | data | len |        |
+| write reply | written len | | | |
+| getattr   | attribute ID     |      |      |        |
+| getattr reply |  || data | read len | | |
+| setattr   | attribute ID ||  data    | len |        | |
+| setattr reply | written len | | | |
 
 ## FTL: Reinvention of Plan 9
+
+
 
 ## FTL: Peek then Receive
 
