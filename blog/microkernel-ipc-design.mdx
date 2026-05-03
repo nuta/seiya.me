@@ -130,23 +130,55 @@ This is what I call *notify & pull* pattern. The server notifies the client, and
 
 ## Interface Definition Language
 
+Message passing is a simple memory copy operation, but it is too simple. Typically, microkernel OS provides a higher-level API to define how you use message passing, in a programming language-agnostic way: an Interface Definition Language (IDL). [gRPC](https://grpc.io/) but for OS services!
 
+Here's an example from [Fuchsia's IDL (FIDL)](https://fuchsia.dev/fuchsia-src/concepts/fidl/overview):
+
+```proto
+// sdk/fidl/fuchsia.io/file.fidl
+alias Transfer = vector<uint8>:MAX_TRANSFER_SIZE;
+
+@discoverable
+open protocol File {
+    @selector("fuchsia.io/File.ReadAt")
+    strict ReadAt(struct {
+        count uint64;
+        offset uint64;
+    }) -> (struct {
+        data Transfer;
+    }) error zx.Status;
+}
+```
+
+Like gRPC, a compiler generates IPC stubs from the IDL file. The generated code is a wrapper around the message passing API, and it handles the serialization and deserialization of the message.
 
 ## IPC design in FTL
 
-I've talked a lot about synchronous IPC. , but I decided to go with asynchronous IPC to make the interface simpler as possible:
+You're finally ready to have fun with FTL's IPC design!
+
+I've talked a lot about synchronous IPC, but in FTL I decided to go with asynchronous IPC to make the interface simpler as possible:
 
 ```c
 void sys_channel_send(
     handle_t ch,
-    message_info_t info,
+    message_info_t info, // message type, body length, user data
     size_t arg1,
     size_t arg2,
     uint8_t *body,
     handle_t handle,
-)
+);
 ```
 
-## FTL's design
+That is, a message in FTL is a memory buffer pointed by `body`, 2 inlined arguments, and an optional handle to be moved to the destination process.
 
+## FTL: No IDL, zero (de)serialization
+
+
+
+## FTL: Reinvention of Plan 9
+
+## FTL: Peek then Receive
+
+
+## FTL: Pull, not Push
 
