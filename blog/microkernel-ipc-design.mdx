@@ -82,7 +82,7 @@ In synchronous message passing, the sender can continue its work without waiting
 - **Backpressure:** How many messages can the sender send? If it is unlimited, the memory could be exhausted. If it is limited, a send operation may block, and you need to handle the case carefully.
 - **Denial of service attack:**  Send too many messages to take an OS service down 😈
 
-[Hubris embeded OS](https://hubris.oxide.computer/reference/#_synchronous_ipc_basics) explains their IPC design in detail. In my experience, synchronous IPC is much easier to debug, and makes the behavior more deterministic.
+[Hubris embeded OS](https://hubris.oxide.computer/reference/#_synchronous_ipc_basics) explains their IPC design in detail. I've explored the approach in [Resea operating system](https://github.com/nuta/resea), and synchronous IPC is much easier to debug, and makes the behavior more deterministic.
 
 ## Synchronous IPC still needs asynchrony
 
@@ -128,13 +128,24 @@ The most simple notification is a boolean flag in a mailbox. Notifying can be do
 
 This is what I call *notify & pull* pattern. The server notifies the client, and the client pulls the data using message passing. In synchronous IPC, it is important to distinguish server and client sides to avoid deadlocks.
 
-## But ... I want asynchronous IPC!
+## Interface Definition Language
 
 
 
-## IDL and verbose IPC stubs
+## IPC design in FTL
 
+I've talked a lot about synchronous IPC. , but I decided to go with asynchronous IPC to make the interface simpler as possible:
 
+```c
+void sys_channel_send(
+    handle_t ch,
+    message_info_t info,
+    size_t arg1,
+    size_t arg2,
+    uint8_t *body,
+    handle_t handle,
+)
+```
 
 ## FTL's design
 
