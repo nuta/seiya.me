@@ -7,7 +7,9 @@ lang: en
 
 Inter-Process Communication (IPC) is a core part of microkernels, and it defines how OS services in the userspace work together.
 
-Over the past few weeks, I had a lot of fun simplifying the IPC design in [FTL operating system](https://github.com/nuta/ftl). While IPC is a simple memory copy operation between processes, you'll run into interesting problems to consider. Let's explore them through FTL's design.
+Over the past few weeks, I had a lot of fun simplifying the IPC design in [FTL operating system](https://github.com/nuta/ftl). While IPC is a simple memory copy operation between processes, you'll run into interesting problems to consider.
+
+Let's explore them through FTL's design.
 
 ## IPC 101
 
@@ -37,20 +39,96 @@ In microkernels, OS components such as device drivers and TCP/IP stack are imple
 
 ## RPC over message passing
 
-In HTTP, you send a request to a server, and the server responds with a response. Likewise, to read a file on a microkernel OS, you send a request to a file system server, and the file system server replies a message with the file data. Most of OS features work like remote procedure call (RPC).
+In HTTP, you send a request to a server, and the server responds with a response. Likewise, to read a file on a microkernel OS, you send a request to a file system server, and the file system server replies a message with the file data. Most of OS features work like remote procedure call (RPC), built on top of message passing.
 
-## Open/closed receive
+In microkernels, processes are categorized into client and server processes. Here's a simple example:
 
+```c
+void client_main(mailbox_t mbox) {
+    message_t reply;
 
-## Asynchronous vs. synchronous IPC
+    message_t msg;
+    msg.type = FILE_READ_MSG;
+    msg.data = "/tmp/test.txt";
+    msg.data_len = 13; // = strlen("/tmp/test.txt")
 
+    ipc_send(mbox, msg);       // Send a request
+    ipc_receive(mbox, &reply); // Wait for a reply
 
+    printf("file data: %.*s\n", reply.data, reply.data_len);
+}
+```
 
-## Memory copy is expensive
+```c
+void server_main(mailbox_t mbox) {
+    while (true) {
+        message_t msg;
+        ipc_receive(mbox, &msg);     // Wait for a request
+        process_message(msg);        // Process the message
+        ipc_send(mbox, &reply);      // Send a reply to the client
+    }
+}
+```
 
+Both client and server processes use the same message passing API elegantly. Beauty of microkernel design!
 
-## Backpressure
+## Synchronous vs. Asynchronous IPC
 
+Asynchronous programming has become the norm in JavaScript, Rust, and Zig. Doing things asynchronously sounds intuitive for performance, but it is not always the best idea.
+
+In synchronous message passing, the sender can continue its work without waiting for the receiver to receive the message. This means you need to keep the message in a queue somewhere, and create problems:
+
+- **Dynamic memory allocation:** The message queue is typically placed in the kernel, and the kernel needs to allocate memory for the queue, which is not ideal in terms of the [separation of mechanism and policy](https://en.wikipedia.org/wiki/Separation_of_mechanism_and_policy).
+- **Backpressure:** How many messages can the sender send? If it is unlimited, the memory could be exhausted. If it is limited, a send operation may block, and you need to handle the case carefully.
+- **Denial of service attack:**  Send too many messages to take an OS service down 😈
+
+[Hubris embeded OS](https://hubris.oxide.computer/reference/#_synchronous_ipc_basics) explains their IPC design in detail. In my experience, synchronous IPC is much easier to debug, and makes the behavior more deterministic.
+
+## Synchronous IPC still needs asynchrony
+
+Interestingly, synchronous IPC based systems typically provide another asynchronous communication mechanism.
+
+Let's say you're writing a TCP/IP server. It communicates with an ethernet driver server to send and receive packets ... and cause a dead lock:
+
+1. TCP/IP server sends a TX packet to the ethernet driver server.
+2. The ethernet driver server is not in the receive state. TCP/IP server blocks.
+3. The ethernet driver got an interrupt from the device, and sends a received packet to the TCP/IP server.
+4. TCP/IP server is not in the receive state, so the ethernet driver server blocks.
+5. ... block forever
+
+In synchronous IPC, the sender waits for the receiver to call `ipc_receive`. This works well for client-server communication, but in server-to-server communication, where the both sides may send requests to each other, they can't make progress.
+
+A typical solution is, ironically, introduce another asynchronous communication mechanism, called *notification*.
+
+Let's see how we can use notifications to solve the deadlock problem in the previous example:
+
+```c
+void ethernet_interrupt_handler(uint8_t *packet) {
+    enqueue_packet(packet);
+    // Notify the TCP/IP server asynchronously that we have data to receive.
+    ipc_notify(mbox);
+}
+
+void tcpip_main(mailbox_t ethernet_mbox) {
+    while (true) {
+        error = ipc_receive(mbox, &msg);
+        if (error == OK && msg.type == RECEIVE_PACKET_REPLY_MSG) {
+            // Received a RX packet
+            process_packet(msg.data);
+        } else if (error == NOTIFIED) {
+            // Request a RX packet
+            msg.type = RECEIVE_PACKET_MSG;
+            ipc_send(ethernet_mbox, &msg);
+        }
+    }
+}
+```
+
+The most simple notification is a boolean flag in a mailbox. Notifying can be done by setting the flag to true and thus it never blocks. You can't know how many times the sender notified you. All you know is the peer wants you to do something.
+
+This is what I call *notify & pull* pattern. The server notifies the client, and the client pulls the data using message passing. In synchronous IPC, it is important to distinguish server and client sides.
+
+## But ... I want asynchronous IPC!
 
 ## IDL and verbose IPC stubs
 
