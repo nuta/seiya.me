@@ -156,7 +156,7 @@ Like gRPC, a compiler generates IPC stubs from the IDL file. The generated code 
 
 You're finally ready to have fun with FTL's IPC design!
 
-I've talked a lot about synchronous IPC, but in FTL I decided to go with asynchronous IPC to make the interface simpler as possible:
+I've talked a lot about synchronous IPC and how beautiful it is, but I took the hard road: asynchronous IPC.
 
 ```c
 void sys_channel_send(
@@ -192,10 +192,7 @@ This is why `sys_channel_send` supports only 2 inlined arguments. As shown in th
 
 ## FTL: Reinvention of Plan 9
 
-
+## FTL: Pull, not Push
 
 ## FTL: Peek then Receive
-
-
-## FTL: Pull, not Push
 
