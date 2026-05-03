@@ -126,9 +126,11 @@ void tcpip_main(mailbox_t ethernet_mbox) {
 
 The most simple notification is a boolean flag in a mailbox. Notifying can be done by setting the flag to true and thus it never blocks. You can't know how many times the sender notified you. All you know is the peer wants you to do something.
 
-This is what I call *notify & pull* pattern. The server notifies the client, and the client pulls the data using message passing. In synchronous IPC, it is important to distinguish server and client sides.
+This is what I call *notify & pull* pattern. The server notifies the client, and the client pulls the data using message passing. In synchronous IPC, it is important to distinguish server and client sides to avoid deadlocks.
 
 ## But ... I want asynchronous IPC!
+
+
 
 ## IDL and verbose IPC stubs
 
