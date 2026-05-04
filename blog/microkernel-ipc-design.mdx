@@ -169,13 +169,13 @@ void sys_channel_send(
 );
 ```
 
-That is, a message in FTL is a memory buffer pointed by `body`, 2 inlined arguments, and an optional handle to be moved to the destination process.
+A message in FTL consists of a memory buffer pointed by `body`, 2 inlined arguments, and an optional handle to be moved to the destination process.
 
 ## FTL: No IDL, zero (de)serialization
 
 FTL does not use IDL. Instead, you'll use predefined 5 request types: `open`, `read`, `write`, `getattr`, and `setattr`. That's it.
 
-This is why `sys_channel_send` supports only 2 inlined arguments. As shown in the table below, message fields can fit into system call arguments, without serilizing into another message format!
+This is why `sys_channel_send` supports only 2 inlined arguments. As shown in the table below, message fields are mapped into system call arguments directly. Zero serialization cost!
 
 | info.type | arg1 | arg2 | body | info.len | handle |
 |-----------|------|------|------|--------|----|
@@ -192,7 +192,40 @@ This is why `sys_channel_send` supports only 2 inlined arguments. As shown in th
 
 ## FTL: Reinvention of Plan 9
 
+In FTL, you `open` a resource like file / network socket, `read` and `write` its data, `getattr` to read metadata, and `setattr` to do an action like changing the file permission or even renaming it.
+
+I arrived at this No-IDL design to eliminate abstraction layers as possible, and interestingly, it is an accidential reinvention of Plan 9! File system specific system calls such as `mkdir`, `readdir`, `rename`, and `chmod` are nicely abstracted into the file interface. For example, renaming a file in Plan 9 is done by [writing an file attribute](https://github.com/golang/go/blob/master/src/os/file_plan9.go#L426). Likewise, in FTL, it is done by `setattr`.
+
+The difference from Plan 9 is that FTL is not particular about the *everything is a file* concept. For example, listening on a TCP socket in Plan 9 looks like this:
+
+```py
+# Open a control file and announce the port we're listening on.
+ctl_file = open("/net/tcp/clone")
+conn_id = ctl_file.read() # e.g. "4"
+ctl_file.write("announce tcp!*!1234")
+
+# Open another file to listen on the announced port.
+conn_file = open(f"/net/tcp/{conn_id}/listen")
+while True:
+    # Wait for a new connection.
+    newconn_id = conn_file.read() # e.g. "5"
+
+    # Open a data stream to the new connection.
+    conn_file = open(f"/net/tcp/{newconn_id}/data")
+    print("accepted a new connection!")
+```
+
+In FTL, the `open`'s path can be arbitrary, not a file path:
+
+```py
+listen_ch = tcpip_ch.open("tcp:0.0.0.0:1234", MODE_LISTEN)
+while True:
+    conn_ch = listen_ch.open("*") # Accept any connection.
+    print("accepted a new connection!")
+```
+
+Notice that both Plan 9 and FTL do not use `socket`, `listen`, `bind`, and `accept` calls. They look much simpler and elegant, don't they?
+
 ## FTL: Pull, not Push
 
 ## FTL: Peek then Receive
-
