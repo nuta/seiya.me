@@ -228,6 +228,38 @@ Notice that both Plan 9 and FTL do not use `socket`, `listen`, `bind`, and `acce
 
 ## Pull, not Push
 
+Message passing is a flexible mechanism and it can be used in various ways. One of early design mistakes is to push data for efficiency: when the ethernet driver receives a packet from the device, send a message to the TCP/IP server. This push-based IPC sounds like a intuitive and efficient way, but it introduces a tricky problem *backpressure*.
 
+If the TCP/IP server can't keep up with the incoming packets, the message queue will be filled up, and the driver needs to handle the case. Backpressure is [a generic problem](https://nodejs.org/learn/modules/backpressuring-in-streams) in programming, and can be solved by waiting for the queue to be writable, and then try pushing the data again. The real problem is, implementing it correctly is really painful.
+
+FTL solves backpressure by *pulling* data. Instead of the driver pushing packets to the TCP/IP server, the TCP/IP server sends a `read` request message to the driver, telling that it's ready to receive a packet. The driver pops data from its internal buffer if any. Explicit backpressure handling is unnecessary.
+
+The message queue length is limited to the # of inflight requests, not the data size that the server has. This is similar to Linux io_uring. It is also an asynchronous API, but they're also pull-based: you enqueue system calls explicitly, and the kernel replies with the result. The io_uring queue is limited to the # of inflight system calls, not the data size transferred.
 
 ## Peek then Receive
+
+This is a bit unique design that are not seen in other operating systems. Before receiving a message, you can peek its content except the body (memory buffer). Here's an example of reading a file on FTL:
+
+```c
+ssize_t read_file(handle_t file_ch, off_t offset, uint8_t *buf, size_t len) {
+    // Send a read request.
+    channel_send(file_ch, READ_MSG, offset, len, NULL, 0);
+
+    // Peek the message to receive.
+    info, arg1, arg2, recv_token = channel_peek(file_ch);
+    if (info.type == READ_REPLY_MSG) {
+        // Receive the message, and copy the body into `buf`.
+        channel_receive(file_ch, recv_token, buf);
+        return info.len;
+    } else {
+        fprintf(stderr, "unexpected message type: %d\n", info.type);
+        return -1;
+    }
+}
+```
+
+This way, you can copy the message body into the desired buffer directly, without copying it. This is somewhat similar to HTTP request handling. You can identify what to do with HTTP method/path/headers, and consume the request body in the endpoint handler. In FTL, you can identify what to do with the message type, channel ID, and inlined arguments. Then, read the body into the desired buffer.
+
+Another advantage of this peek-then-receive pattern is that until you receive the message, it is kept in the kernel's message queue. If the server's internal buffer is full, keep the receive token to process it later. This naturally propagates backpressure to the client. You don't have to tell the kernel to stop accepting new messages.
+
+Furthermore, in real code you don't need to call `channel_peek`. FTL's event stream API like Linux epoll returns a message event with the peeked information. This pattern does not require an additional system call overhead!
