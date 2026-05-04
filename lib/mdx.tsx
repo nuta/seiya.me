@@ -130,28 +130,27 @@ export async function renderMDX(source: string) {
         <hr className="my-10 border-t border-gray-300 dark:border-gray-700" />
       ),
       table: (props) => (
-        <table className="my-6 table-auto border-collapse border border-gray-300 dark:border-gray-700">
-          {props.children}
-        </table>
+        <div className="my-6 overflow-x-auto">
+          <table className="min-w-full table-auto border-collapse border border-black/15 text-sm dark:border-white/15">
+            {props.children}
+          </table>
+        </div>
       ),
       th: (props) => (
-        <th className="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-400">
+        <th className="border border-black/15 bg-gray-100 px-2 py-1.5 text-left text-xs font-semibold text-gray-800 dark:border-white/15 dark:bg-gray-800 dark:text-gray-200 [&_code]:text-xs">
           {props.children}
         </th>
       ),
       td: (props) => (
-        <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
+        <td className="border border-black/15 px-2 py-1.5 text-sm leading-snug text-gray-800 align-top dark:border-white/15 dark:text-gray-300 [&_code]:text-[90%]">
           {props.children}
         </td>
       ),
-      tr: (props) => (
-        <tr className="border-t border-gray-300 dark:border-gray-700">
-          {props.children}
-        </tr>
-      ),
+      tr: (props) => <tr>{props.children}</tr>,
       thead: (props) => (
-        <thead className="bg-gray-50 dark:bg-gray-900">{props.children}</thead>
+        <thead>{props.children}</thead>
       ),
+      tbody: (props) => <tbody>{props.children}</tbody>,
       Tweet: (props) => (
         <Tweet {...props} />
       ),

@@ -1,17 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  --text-base: 17px;
+  --text-base: 16px;
 }
 
 body {
   font-family:
-    "Verdana",
     -apple-system,
     BlinkMacSystemFont,
     "Hiragino Sans",
     sans-serif;
-  @apply text-gray-900 dark:bg-gray-950 dark:text-gray-300;
+  @apply text-gray-800 dark:bg-gray-950 dark:text-gray-300;
 }
 
 h1,
