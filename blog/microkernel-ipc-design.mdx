@@ -171,7 +171,7 @@ void sys_channel_send(
 
 A message in FTL consists of a memory buffer pointed by `body`, 2 inlined arguments, and an optional handle to be moved to the destination process.
 
-## FTL: No IDL, zero (de)serialization
+## No IDL, zero (de)serialization
 
 FTL does not use IDL. Instead, you'll use predefined 5 request types: `open`, `read`, `write`, `getattr`, and `setattr`. That's it.
 
@@ -190,7 +190,7 @@ This is why `sys_channel_send` supports only 2 inlined arguments. As shown in th
 | setattr   | attribute ID ||  data    | len |        | |
 | setattr reply | written len | | | |
 
-## FTL: Reinvention of Plan 9
+## FTL: A reinvention of Plan 9
 
 In FTL, you `open` a resource like file / network socket, `read` and `write` its data, `getattr` to read metadata, and `setattr` to do an action like changing the file permission or even renaming it.
 
@@ -226,6 +226,8 @@ while True:
 
 Notice that both Plan 9 and FTL do not use `socket`, `listen`, `bind`, and `accept` calls. They look much simpler and elegant, don't they?
 
-## FTL: Pull, not Push
+## Pull, not Push
 
-## FTL: Peek then Receive
+
+
+## Peek then Receive
