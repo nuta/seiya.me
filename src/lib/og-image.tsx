@@ -1,7 +1,9 @@
 import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
 
-async function loadGoogleFont(font: string, weight: number) {
+const fontCache = new Map<string, Promise<ArrayBuffer>>();
+
+async function fetchGoogleFont(font: string, weight: number) {
   const url = `https://fonts.googleapis.com/css2?family=${font.replace(" ", "+")}:wght@${weight}`;
   const css = await (await fetch(url)).text();
   const resource = css.match(
@@ -16,6 +18,16 @@ async function loadGoogleFont(font: string, weight: number) {
   }
 
   throw new Error("failed to load font data");
+}
+
+function loadGoogleFont(font: string, weight: number) {
+  const key = `${font}:${weight}`;
+  let promise = fontCache.get(key);
+  if (!promise) {
+    promise = fetchGoogleFont(font, weight);
+    fontCache.set(key, promise);
+  }
+  return promise;
 }
 
 export async function renderOgImage(
