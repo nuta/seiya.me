@@ -1,0 +1,22 @@
+---
+const navItems = [
+  { label: "about", href: "/", prefetch: true },
+  { label: "blog", href: "/blog", prefetch: true },
+  { label: "twitter", href: "https://x.com/seiyanuta", prefetch: false },
+  { label: "github", href: "https://github.com/nuta", prefetch: false },
+];
+---
+
+<nav class="flex flex-row items-start mb-8">
+  {
+    navItems.map((item) => (
+      <a
+        href={item.href}
+        data-astro-prefetch={item.prefetch || undefined}
+        class="py-1 pr-8"
+      >
+        {item.label}
+      </a>
+    ))
+  }
+</nav>

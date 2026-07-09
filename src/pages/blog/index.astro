@@ -1,0 +1,55 @@
+---
+import { FaRssSquare } from "react-icons/fa";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import NavBar from "@/components/NavBar.astro";
+import { getPosts } from "@/lib/posts";
+import { toDateString } from "@/lib/date";
+
+const { englishPosts, japanesePosts } = await getPosts();
+---
+
+<BaseLayout title="Seiya Nuta">
+  <NavBar />
+  <header class="mb-12">
+    <h1 class="text-2xl font-bold">
+      Blog
+      <span class="text-xl text-gray-700 ml-4">
+        <a href="/atom.xml">
+          <FaRssSquare className="inline-block mr-1 text-orange-500" />feed
+        </a>
+      </span>
+    </h1>
+  </header>
+
+  <ul class="list-none">
+    {
+      englishPosts.map((post) => (
+        <li class="mb-1 mb-4 flex flex-col md:flex-row md:items-center">
+          <span class="text-sm gray-text mr-3 tabular-nums w-[100px] md:text-right">
+            {toDateString(post.data.date)}
+          </span>
+          <a href={`/blog/${post.id}`} data-astro-prefetch>
+            {post.data.title}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  {
+    japanesePosts.length > 0 && (
+      <ul class="list-none mt-12">
+        {japanesePosts.map((post) => (
+          <li class="mb-1 mb-4 flex flex-col md:flex-row md:items-center">
+            <span class="text-sm gray-text mr-3 tabular-nums w-[100px] md:text-right">
+              {toDateString(post.data.date)}
+            </span>
+            <a href={`/blog/${post.id}`} data-astro-prefetch>
+              {post.data.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</BaseLayout>

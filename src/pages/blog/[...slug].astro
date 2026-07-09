@@ -1,0 +1,61 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import NavBar from "@/components/NavBar.astro";
+import CustomImage from "@/components/mdx/CustomImage.astro";
+import TweetEmbed from "@/components/mdx/TweetEmbed.astro";
+import { toISODateString } from "@/lib/date";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const ogImageUrl = `https://seiya.me/og/${post.id}`;
+---
+
+<BaseLayout title={post.data.title}>
+  <Fragment slot="head">
+    <meta property="og:title" content={post.data.title} />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content={`https://seiya.me/blog/${post.id}`} />
+    <meta property="og:site_name" content="seiya.me" />
+    <meta
+      property="article:published_time"
+      content={toISODateString(post.data.date)}
+    />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={post.data.title} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={post.data.title} />
+    <meta name="twitter:description" content={post.data.title} />
+    <meta name="twitter:creator" content="@seiyanuta" />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={post.data.title} />
+  </Fragment>
+
+  <article>
+    <NavBar />
+    <header class="mb-8">
+      <h1 class="text-2xl font-sans font-bold">{post.data.title}</h1>
+      <p class="text-sm gray-text mt-2">{toISODateString(post.data.date)}</p>
+    </header>
+    <div class="mdx-content font-[PT Serif]">
+      <Content components={{ img: CustomImage, Tweet: TweetEmbed }} />
+    </div>
+    <footer class="text-center mt-12 mb-8">
+      &mdash; <br />
+      Written by <a href="/">Seiya Nuta</a>
+      <br />
+      CC BY 4.0
+    </footer>
+  </article>
+</BaseLayout>
