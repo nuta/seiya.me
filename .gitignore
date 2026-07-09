@@ -17,9 +17,6 @@
 .astro/
 dist/
 
-# local pnpm build-script approvals, not needed for deploy
-pnpm-workspace.yaml
-
 # misc
 .DS_Store
 *.pem
