@@ -1,5 +1,11 @@
-# Supply-chain attack protection (requires pnpm >= 10.26, see packageManager
-# in package.json and the ENABLE_EXPERIMENTAL_COREPACK=1 Vercel env var).
+# Not a real monorepo; only present so pnpm >= 10 will pick up the
+# supply-chain settings below. Older pnpm (e.g. Vercel's auto-detected 9.x)
+# ignores keys it doesn't recognize as long as `packages` is present.
+packages:
+  - "."
+
+# Supply-chain attack protection. Only takes effect on pnpm >= 10.26 (see
+# https://pnpm.io/settings); on older pnpm these keys are silently ignored.
 
 # Refuse to install a package version published less than 3 days ago, so a
 # compromised release has time to be caught and unpublished before we pull it.
