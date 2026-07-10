@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@theme {
+  --text-base: 16px;
+}
+
+body {
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Hiragino Sans",
+    sans-serif;
+  @apply text-gray-800 dark:bg-gray-950 dark:text-gray-300;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-bold text-gray-800 dark:text-gray-200;
+}
+
+.gray-text {
+  @apply text-gray-500 dark:text-gray-300;
+}
+
+a {
+  @apply text-sky-600 dark:text-sky-400;
+}
+
+a:visited {
+  @apply text-fuchsia-600 dark:text-fuchsia-400;
+}
+
+a:hover {
+  @apply text-sky-800 dark:text-sky-300;
+}
+
+a:active {
+  @apply text-red-800 dark:text-red-400;
+}
+
+code:not(pre code) {
+  @apply select-all;
+}
+
+[data-highlighted-line] {
+  width: 100%;
+  display: inline-block;
+  background-color: rgba(230, 240, 250, 0.14);
+}
+
+.mdx-content h2 {
+  @apply font-sans text-2xl font-bold mt-10 mb-6 pb-1 border-b border-gray-300 dark:border-gray-700;
+}
+
+.mdx-content h3 {
+  @apply font-sans text-xl font-semibold mt-10 mb-4;
+}
+
+.mdx-content h4 {
+  @apply font-sans text-lg font-semibold mt-8 mb-3;
+}
+
+.mdx-content h5 {
+  @apply font-sans text-lg font-semibold mt-6 mb-2;
+}
+
+.mdx-content p {
+  @apply text-base leading-relaxed mb-6 max-w-prose;
+}
+
+.mdx-content code {
+  @apply font-mono text-[92%];
+}
+
+.mdx-content pre {
+  @apply my-6 px-4 py-4 text-slate-200 bg-slate-900 leading-5 rounded-lg overflow-x-auto border border-slate-700;
+}
+
+.mdx-content ul {
+  @apply list-disc pl-6 text-base mb-5 space-y-2;
+}
+
+.mdx-content ol {
+  @apply list-decimal pl-6 text-base mb-5 space-y-2;
+}
+
+.mdx-content strong {
+  @apply font-bold text-gray-900 dark:text-gray-100;
+}
+
+.mdx-content em {
+  @apply italic text-gray-900 dark:text-gray-100;
+}
+
+.mdx-content blockquote {
+  @apply text-base mb-6 border-l-4 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 pl-6 italic py-2;
+}
+
+.mdx-content hr {
+  @apply my-10 border-t border-gray-300 dark:border-gray-700;
+}
+
+.mdx-content table {
+  @apply my-6 block overflow-x-auto min-w-full table-auto border-collapse border border-black/15 text-sm dark:border-white/15;
+}
+
+.mdx-content th {
+  @apply border border-black/15 bg-gray-100 px-2 py-1.5 text-left text-xs font-semibold text-gray-800 dark:border-white/15 dark:bg-gray-800 dark:text-gray-200;
+}
+
+.mdx-content th code,
+.mdx-content td code {
+  @apply text-[90%];
+}
+
+.mdx-content td {
+  @apply border border-black/15 px-2 py-1.5 text-sm leading-snug text-gray-800 align-top dark:border-white/15 dark:text-gray-300;
+}

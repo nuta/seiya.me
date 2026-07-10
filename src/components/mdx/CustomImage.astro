@@ -1,0 +1,32 @@
+---
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import sizeOf from "image-size";
+
+interface Props {
+  src?: string;
+  alt?: string;
+}
+
+const { src, alt } = Astro.props;
+
+if (typeof src !== "string") {
+  throw new Error("Image src is required");
+}
+
+if (!src.startsWith("/")) {
+  throw new Error(`Image src must start with /: ${src}`);
+}
+
+const imagePath = path.join(process.cwd(), "public", src);
+const image = readFileSync(imagePath);
+
+let size;
+try {
+  size = sizeOf(image);
+} catch (e) {
+  throw new Error(`Error getting image size for ${src}: ${e}`);
+}
+---
+
+<img class="my-8" src={src} alt={alt} width={size.width} height={size.height} />

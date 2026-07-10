@@ -1,0 +1,11 @@
+---
+import { Tweet } from "react-tweet";
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+---
+
+<Tweet id={id} client:visible />

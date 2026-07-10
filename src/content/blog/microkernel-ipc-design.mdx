@@ -1,0 +1,268 @@
+---
+title: "Designing microkernel IPC"
+date: 2026-05-04
+lang: en
+---
+
+Inter-Process Communication (IPC) is a core part of microkernels, and it defines how OS services in the userspace work together.
+
+Over the past few weeks, I had a lot of fun simplifying the IPC design in [FTL operating system](https://github.com/nuta/ftl). While IPC is a simple memory copy operation between processes, you'll run into interesting problems to consider.
+
+## IPC 101
+
+IPC is how processes communicate with each other. For example, pipe (e.g., `cat | grep`) is one of the IPC mechanisms available on Linux. Another example is a UNIX domain socket, which is commonly used as an internal service channel, exposed to the file system as a `.sock` file. IPC is, in essence, `memcpy(2)` but across processes.
+
+In microkernels, IPC is typically implemented as message passing. Each message typically contains a message type, type-specific data, and handles (file descriptors). Here's an overview of message passing based IPC:
+
+```c
+// Message queue ID.
+typedef int mailbox_t;
+
+// Message format.
+typedef struct {
+    int type;
+    int handles[MAX_HANDLES];
+    size_t data_len;
+    void *data;
+} message_t;
+
+void ipc_send(mailbox_t mbox, message_t msg);
+message_t ipc_receive(mailbox_t mbox);
+```
+
+`ipc_send` sends a message `msg` to the mailbox `mbox`. The kernel copies the message into its internal message queue, and the destination process receives it via `ipc_receive`, just like a UNIX pipe.
+
+In microkernels, OS components such as device drivers and TCP/IP stack are implemented as user-mode processes, and use this message passing mechanism to isolate them.
+
+## RPC over message passing
+
+In HTTP, you send a request to a server, and the server responds. Likewise, to read a file on a microkernel OS, you send a request to a file system server, and the file system server replies with a message containing the file data. Most OS features work like a remote procedure call (RPC), built on top of message passing.
+
+In microkernels, processes are categorized into client and server processes. Here's a simple example:
+
+```c
+void client_main(mailbox_t mbox) {
+    message_t reply;
+
+    message_t msg;
+    msg.type = FILE_READ_MSG;
+    msg.data = "/tmp/test.txt";
+    msg.data_len = 13; // = strlen("/tmp/test.txt")
+
+    ipc_send(mbox, msg);       // Send a request
+    ipc_receive(mbox, &reply); // Wait for a reply
+
+    printf("file data: %.*s\n", reply.data, reply.data_len);
+}
+```
+
+```c
+void server_main(mailbox_t mbox) {
+    while (true) {
+        message_t msg;
+        ipc_receive(mbox, &msg);     // Wait for a request
+        process_message(msg);        // Process the message
+        ipc_send(mbox, &reply);      // Send a reply to the client
+    }
+}
+```
+
+Both client and server processes use the same message passing API elegantly. This is the beauty of microkernel design!
+
+## Synchronous vs. Asynchronous IPC
+
+Asynchronous programming has become the norm. Doing things asynchronously sounds intuitive for performance, but it is typically more complex and is harder.
+
+In asynchronous message passing, the sender can continue its work without waiting for the receiver to receive the message. This means you need to keep the message in a queue somewhere, which creates problems:
+
+- **Dynamic memory allocation:** The message queue is typically placed in the kernel, and the kernel needs to allocate memory for the queue, which is not ideal in terms of the [separation of mechanism and policy](https://en.wikipedia.org/wiki/Separation_of_mechanism_and_policy).
+- **Backpressure:** How many messages can the sender send? If it is unlimited, the memory could be exhausted. If it is limited, a send operation may block, and you need to handle the case carefully.
+- **Denial-of-service attack:** Send too many messages to take an OS service down 😈
+
+[Hubris embedded OS](https://hubris.oxide.computer/reference/#_synchronous_ipc_basics) explains their synchronous IPC design in detail. I've explored the approach in [Resea operating system](https://github.com/nuta/resea), and synchronous IPC is much easier to debug, and makes the behavior more deterministic. Synchronous API sounds old-fashioned, but it is still a thing.
+
+## Synchronous IPC still needs asynchrony
+
+Interestingly, synchronous-IPC-based systems typically provide another asynchronous communication mechanism.
+
+Let's say you're writing a TCP/IP server. It communicates with an Ethernet driver server to send and receive packets ... and hits a deadlock:
+
+1. TCP/IP server sends a TX packet to the Ethernet driver server.
+2. The Ethernet driver server is not in the receive state. TCP/IP server blocks.
+3. The Ethernet driver gets an interrupt from the device, and sends a received packet to the TCP/IP server.
+4. TCP/IP server is not in the receive state, so the Ethernet driver server blocks.
+5. ... block forever
+
+In synchronous IPC, the sender waits for the receiver to call `ipc_receive`. This works well for client-server communication, but in server-to-server communication, where both sides may send requests to each other, they can't make progress.
+
+A typical solution is, ironically, to introduce another asynchronous communication mechanism, called *notification*.
+
+Let's see how we can use notifications to solve the deadlock problem in the previous example:
+
+```c
+void ethernet_interrupt_handler(uint8_t *packet) {
+    enqueue_packet(packet);
+    // Notify the TCP/IP server asynchronously that we have data to receive.
+    ipc_notify(mbox);
+}
+
+void tcpip_main(mailbox_t ethernet_mbox) {
+    while (true) {
+        error = ipc_receive(mbox, &msg);
+        if (error == OK && msg.type == RECEIVE_PACKET_REPLY_MSG) {
+            // Received an RX packet
+            process_packet(msg.data);
+        } else if (error == NOTIFIED) {
+            // Request an RX packet
+            msg.type = RECEIVE_PACKET_MSG;
+            ipc_send(ethernet_mbox, &msg);
+        }
+    }
+}
+```
+
+The simplest notification is a boolean flag in a mailbox. Notifying can be done by setting the flag to true and thus it never blocks. You can't know how many times the sender notified you. All you know is the peer wants you to do something.
+
+This is what I call the *notify & pull* pattern. The server notifies the client, and the client pulls the data using message passing. In synchronous IPC, it is important to distinguish server and client sides to avoid deadlocks.
+
+## Interface Definition Language
+
+Message passing is a simple memory copy operation, but it is too simple. Typically, microkernel OSes provide a higher-level API to define how you use message passing, in a programming language-agnostic way: an Interface Definition Language (IDL). Think [gRPC](https://grpc.io/), but for OS services!
+
+Here's an example from [Fuchsia's IDL (FIDL)](https://fuchsia.dev/fuchsia-src/concepts/fidl/overview):
+
+```proto
+// sdk/fidl/fuchsia.io/file.fidl
+alias Transfer = vector<uint8>:MAX_TRANSFER_SIZE;
+
+@discoverable
+open protocol File {
+    @selector("fuchsia.io/File.ReadAt")
+    strict ReadAt(struct {
+        count uint64;
+        offset uint64;
+    }) -> (struct {
+        data Transfer;
+    }) error zx.Status;
+}
+```
+
+Like gRPC, a compiler generates IPC stubs from the IDL file. The generated code is a wrapper around the message passing API, and it handles the serialization and deserialization of the message.
+
+## IPC design in FTL
+
+You're finally ready to learn about FTL's IPC design!
+
+I've talked a lot about synchronous IPC and how beautiful it is, but I took the hard road: asynchronous IPC for better performance. Here's how the send system call looks like:
+
+```c
+void sys_channel_send(
+    handle_t ch,
+    message_info_t info, // message type, body length, user data
+    size_t arg1,
+    size_t arg2,
+    uint8_t *body,
+    handle_t handle,
+);
+```
+
+A message in FTL consists of a memory buffer pointed to by `body`, two inlined arguments, and an optional handle to be moved to the destination process.
+
+## No IDL, zero (de)serialization
+
+FTL does not use IDL. Instead, you'll use five predefined request types: `open`, `read`, `write`, `getattr`, and `setattr`. That's it.
+
+This is why `sys_channel_send` supports only two inlined arguments. As shown in the table below, message fields are mapped into system call arguments directly. Zero serialization cost!
+
+| info.type | arg1 | arg2 | body | info.len | handle |
+|-----------|------|------|------|--------|----|
+| open      | path ||      |      |        |
+| open reply |  | | || opened handle |
+| read      | offset | len |      |        |
+| read reply | | | data | read len | |
+| write     | offset |  | data | len |        |
+| write reply | written len | | | |
+| getattr   | attribute ID     |      |      |        |
+| getattr reply |  || data | read len | | |
+| setattr   | attribute ID ||  data    | len |        | |
+| setattr reply | written len | | | |
+
+## FTL: A reinvention of Plan 9
+
+In FTL, you `open` a resource like a file / network socket, `read` and `write` its data, use `getattr` to read metadata, and `setattr` to perform an action like changing the file permission or even renaming it.
+
+I arrived at this No-IDL design to eliminate abstraction layers as much as possible, and interestingly, it is an accidental reinvention of Plan 9! File-system-specific system calls such as `mkdir`, `readdir`, `rename`, and `chmod` are nicely abstracted into the file interface. For example, renaming a file in Plan 9 is done by [writing a file attribute](https://github.com/golang/go/blob/master/src/os/file_plan9.go#L426). Likewise, in FTL, it is done by `setattr`.
+
+The difference from Plan 9 is that FTL is not particular about the *everything is a file* concept. For example, listening on a TCP socket in Plan 9 looks like this:
+
+```py
+# Open a control file and announce the port we're listening on.
+ctl_file = open("/net/tcp/clone")
+conn_id = ctl_file.read() # e.g. "4"
+ctl_file.write("announce tcp!*!1234")
+
+# Open another file to listen on the announced port.
+conn_file = open(f"/net/tcp/{conn_id}/listen")
+while True:
+    # Wait for a new connection.
+    newconn_id = conn_file.read() # e.g. "5"
+
+    # Open a data stream to the new connection.
+    conn_file = open(f"/net/tcp/{newconn_id}/data")
+    print("accepted a new connection!")
+```
+
+In FTL, the `open`'s path can be arbitrary, not a file path:
+
+```py
+listen_ch = tcpip_ch.open("tcp:0.0.0.0:1234", MODE_LISTEN)
+while True:
+    conn_ch = listen_ch.open("*") # Accept any connection.
+    print("accepted a new connection!")
+```
+
+Notice that both Plan 9 and FTL do not use `socket`, `listen`, `bind`, and `accept` calls. They look much simpler and elegant, don't they?
+
+## Pull, not Push
+
+Message passing is a flexible mechanism and it can be used in various ways. One early design mistake is to push data for efficiency: when the Ethernet driver receives a packet from the device, send a message to the TCP/IP server. This push-based IPC sounds like an intuitive and efficient approach, but it introduces a tricky problem: *backpressure*.
+
+If the TCP/IP server can't keep up with the incoming packets, the message queue will fill up, and the driver must handle that case. Backpressure is [a generic problem](https://nodejs.org/learn/modules/backpressuring-in-streams) in programming: you can wait for the queue to become writable and try pushing again—but implementing this correctly is painful.
+
+FTL solves backpressure by *pulling* data. Instead of the driver pushing packets to the TCP/IP server, the TCP/IP server sends a `read` request message to the driver, indicating that it's ready to receive a packet. The driver pops data from its internal buffer if any. Explicit backpressure handling is unnecessary.
+
+The message queue length is limited to the number of in-flight requests, not the volume of data the server holds. This is similar to Linux io_uring. It is also an asynchronous API and pull-based: you enqueue system calls explicitly, and the kernel replies with the result. The io_uring queue is limited to the number of in-flight system calls, not the amount of data transferred.
+
+## Peek then Receive
+
+This is a somewhat unusual design that is not seen in other operating systems. Before receiving a message, you can peek everything except the body (the memory buffer). Here's an example of reading a file on FTL:
+
+```c
+ssize_t read_file(handle_t file_ch, off_t offset, uint8_t *buf, size_t len) {
+    // Send a read request.
+    channel_send(file_ch, READ_MSG, offset, len, NULL, 0);
+
+    // Peek the message to receive.
+    info, arg1, arg2, recv_token = channel_peek(file_ch);
+    if (info.type == READ_REPLY_MSG) {
+        // Receive the message, and copy the body into `buf`.
+        channel_receive(file_ch, recv_token, buf);
+        return info.len;
+    } else {
+        fprintf(stderr, "unexpected message type: %d\n", info.type);
+        return -1;
+    }
+}
+```
+
+This way, you can receive the message body straight into the desired buffer, without an extra memory copy. This is somewhat similar to HTTP request handling. You can identify what to do with HTTP method/path/headers, and consume the request body in the endpoint handler. In FTL, you can identify what to do with the message type, channel ID, and inlined arguments. Then, read the body into the desired buffer.
+
+Another advantage of this peek-then-receive pattern is that until you receive the message, it is kept in the kernel's message queue. If the server's internal buffer is full, keep the receive token to process it later. This naturally propagates backpressure to the client. You don't have to tell the kernel to stop accepting new messages.
+
+Furthermore, in real code you don't need to call `channel_peek`. FTL's event stream API, similar to Linux epoll, returns a message event with the peeked information to avoid the extra system-call overhead.
+
+## What's next?
+
+These design patterns also took a lot of time to design, and the key motivation was to make it easy to integrate with async Rust, especially achieving cancellation safety. I'm experimenting async Rust support nowadays, and plan to write a blog post about it once it's done.
+
+If you're interested in FTL's IPC design and how it works, check out the [Channel | FTL Documentation](https://ftl-docs.seiya.me/learn/channel).

@@ -1,0 +1,24 @@
+# Not a real monorepo; only present so pnpm >= 10 will pick up the
+# supply-chain settings below. Older pnpm (e.g. Vercel's auto-detected 9.x)
+# ignores keys it doesn't recognize as long as `packages` is present.
+packages:
+  - "."
+
+# Supply-chain attack protection. Only takes effect on pnpm >= 10.26 (see
+# https://pnpm.io/settings); on older pnpm these keys are silently ignored.
+
+# Refuse to install a package version published less than 3 days ago, so a
+# compromised release has time to be caught and unpublished before we pull it.
+minimumReleaseAge: 4320
+
+# Only these packages may run install-time lifecycle scripts (postinstall
+# etc). Everything else is blocked by default. Add an entry here only when a
+# new dependency legitimately needs to build/download a native binary.
+allowBuilds:
+  esbuild: true
+  sharp: true
+  "@resvg/resvg-js": true
+
+# Reject a dependency update if its declared trust level (e.g. provenance)
+# drops compared to the previously installed version.
+trustPolicy: no-downgrade

@@ -1,0 +1,130 @@
+---
+import { Image } from "astro:assets";
+import { FaRssSquare } from "react-icons/fa";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import MyPicture from "@/assets/me.jpg";
+import { getPosts } from "@/lib/posts";
+import { toDateString } from "@/lib/date";
+
+const { englishPosts, japanesePosts } = await getPosts();
+---
+
+<BaseLayout title="Seiya Nuta">
+  <div class="font-sans home-page">
+    <header class="flex flex-row items-center">
+      <div>
+        <Image src={MyPicture} alt="selfie" class="rounded max-w-24" />
+      </div>
+      <div class="ml-5 py-1 flex flex-col justify-between self-stretch">
+        <div>
+          <h1 class="text-2xl font-bold tracking-wide">Seiya Nuta</h1>
+        </div>
+        <p class="my-2 font-mono text-base select-all">
+          nuta<span class="hidden">invisible in real browsers</span><span
+            class="px-[1px]">@</span
+          >seiya.me
+        </p>
+        <nav class="flex flex-row gap-4">
+          <a href="/blog" data-astro-prefetch>Blog</a>
+          <a href="https://x.com/seiyanuta">Twitter</a>
+          <a href="https://github.com/nuta">GitHub</a>
+          <a href="https://www.linkedin.com/in/seiyanuta/">LinkedIn</a>
+        </nav>
+      </div>
+    </header>
+    <main class="my-12">
+      <section class="mt-12">
+        <h2 class="mb-2 text-2xl font-bold">Projects</h2>
+        <ul class="space-y-4">
+          <li>
+            <a href="https://github.com/nuta/ftl" class="font-bold">FTL</a>: A
+            modern, general-purpose, and microkernel-based operating system.
+          </li>
+          <li>
+            <a href="https://github.com/nuta/kerla" class="font-bold">Kerla</a
+            >: A Linux ABI-compatible kernel written in Rust. It supports
+            fork/execve, signals, mmap, pipe, poll, tty/pty, tmpfs, UDP/TCP
+            sockets, and more to <a
+              href="/blog/writing-linux-clone-in-rust"
+              data-astro-prefetch>run Dropbear SSH server</a
+            >.
+          </li>
+        </ul>
+      </section>
+
+      <section class="mt-8">
+        <h2 class="mb-2 text-2xl font-bold">Publications</h2>
+        <ul class="space-y-4">
+          <li>
+            <a
+              href="https://github.com/nuta/microkernel-book"
+              class="font-bold">Design and Implementation of Microkernels</a
+            >: A comprehensive guide that delves into the world of
+            microkernels including real-world microkernels (seL4, MINIX3, and
+            Mach), and a minimalistic educational microkernel (<a
+              href="https://github.com/nuta/microkernel-book">HinaOS</a
+            >).
+          </li>
+          <li>
+            <a
+              href="https://github.com/nuta/operating-system-in-1000-lines"
+              class="font-bold">Writing an Operating System in 1,000 Lines</a
+            >: A beginner's guide to implement context switching, paging,
+            system calls, user mode, virtio-blk driver, file system, and
+            shell in 1,000 lines of C.
+          </li>
+        </ul>
+      </section>
+
+      <section class="mt-8">
+        <h2 class="mb-2 text-2xl font-bold">
+          Blog
+          <span class="text-base gray-text ml-2">
+            <a href="/atom.xml">
+              <FaRssSquare className="inline-block mr-1 text-orange-500" />feed
+            </a>
+          </span>
+        </h2>
+
+        <ul class="list-none">
+          {
+            englishPosts.map((post) => (
+              <li class="mb-1 flex flex-col md:flex-row md:items-center">
+                <span class="text-sm gray-text mr-3 tabular-nums w-[100px] md:text-right">
+                  {toDateString(post.data.date)}
+                </span>
+                <a href={`/blog/${post.id}`} data-astro-prefetch>
+                  {post.data.title}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        {
+          japanesePosts.length > 0 && (
+            <ul class="list-none mt-8">
+              {japanesePosts.map((post) => (
+                <li class="mb-1 flex flex-col md:flex-row md:items-center">
+                  <span class="text-sm gray-text mr-3 tabular-nums w-[100px] md:text-right">
+                    {toDateString(post.data.date)}
+                  </span>
+                  <a href={`/blog/${post.id}`} data-astro-prefetch>
+                    {post.data.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </section>
+    </main>
+  </div>
+</BaseLayout>
+
+<style>
+  .home-page :global(ul:not(.list-none)) {
+    list-style-type: disc;
+    margin-left: 1rem;
+  }
+</style>
