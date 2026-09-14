@@ -45,10 +45,10 @@ const ogImageUrl = `https://seiya.me/og/${post.id}`;
   <article>
     <NavBar />
     <header class="mb-8">
-      <h1 class="text-2xl font-sans font-bold">{post.data.title}</h1>
+      <h1 class="text-lg font-sans font-bold md:text-2xl">{post.data.title}</h1>
       <p class="text-sm gray-text mt-2">{toISODateString(post.data.date)}</p>
     </header>
-    <div class="mdx-content font-[PT Serif]">
+    <div class="mdx-content">
       <Content components={{ img: CustomImage, Tweet: TweetEmbed }} />
     </div>
     <footer class="text-center mt-12 mb-8">

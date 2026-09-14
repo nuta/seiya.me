@@ -22,3 +22,10 @@ allowBuilds:
 # Reject a dependency update if its declared trust level (e.g. provenance)
 # drops compared to the previously installed version.
 trustPolicy: no-downgrade
+
+# Older pins whose later versions gained provenance; the check is
+# publish-date based, so they look like takeovers. They aren't.
+trustPolicyExclude:
+  - chokidar@4.0.3
+  - semver@6.3.1
+  - undici-types@6.21.0

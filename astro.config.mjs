@@ -22,5 +22,12 @@ export default defineConfig({
     resolve: {
       noExternal: ["react-tweet"],
     },
+    // Native .node binary — Rolldown tries to parse it as UTF-8 otherwise.
+    optimizeDeps: {
+      exclude: ["@resvg/resvg-js"],
+    },
+    ssr: {
+      external: ["@resvg/resvg-js"],
+    },
   },
 });
