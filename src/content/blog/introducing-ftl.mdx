@@ -122,6 +122,6 @@ Linux compatibility layer implements system calls such as `read`, `write`, `fork
 
 I'm currently working on running modern software like `tokio`-based async Rust applications, and eventually Node.js by December this year. Linux container images support too. The goal of FTL is to be a drop-in replacement for Linux in clouds.
 
-FTL is still in early development and I'll have to build disk support, efficient copy-on-write `fork(2)`, `/proc` filesystem, TTY support, and more. That being said, this toy started working and is already fun to play with.
+FTL is still in early development. It lacks disk support, efficient copy-on-write `fork(2)`, `/proc` filesystem, TTY support, and more. That being said, this toy started working and is already fun to play with.
 
 To try it out, clone [the Git repo](https://github.com/nuta/ftl) and just run `./run.sh`. If you're intested in this project, share you questions/ideas on [GitHub Discussions](https://github.com/nuta/ftl/discussions) or [email me](https://seiya.me) :)
