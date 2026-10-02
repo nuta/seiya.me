@@ -1,0 +1,37 @@
+---
+title: "FTL v0.1.0: Better Linux compatibility, and multi-threaded Tokio"
+date: 2026-10-03
+lang: en
+---
+
+[FTL operating system](https://ftl-os.org) v0.1.0 is released. This release brings **async Rust support (multi-thread Tokio runtime)** to FTL.
+
+## Changes
+
+v0.1.0 adds lots of missing pieces in Linux compatibility layer:
+
+- Linux threads, futex, epoll, signals, tty, brk, mmap, dup3, pipe, eventfd, and more.
+- Console system calls (serial ports) to allow shell access.
+- Wall-clock time API.
+- virtio-mmio and [QEMU microVM](https://www.qemu.org/docs/master/system/i386/microvm.html) support.
+- Anonymous memory pages are now allocated lazily.
+- Blocking Linux system calls are not interruptible by signals.
+- Hardening improvements such as x86-64 SMEP/SMAP.
+
+## New website
+
+[ftl-os.org](https://ftl-os.org) has a new look with a fresh design, is now powered by a tokio-based HTTP server on FTL on Google Compute Engine. The FTL development is on track, I think I can migrate this blog to FTL soon.
+
+## How to try
+
+Follow instructions in [the README](https://github.com/nuta/ftl#running-locally) to try FTL. On macOS:
+
+```
+brew install rustup qemu
+git clone https://github.com/nuta/ftl.git && cd ftl
+./run.sh
+```
+
+## What's next?
+
+In the next November release will include file system optimized for stateless workloads like [Kubernetes' ephemeral volumes](https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/), dynamic Linux container (userspace OS) creation, and a better sandboxing concept to allow running untrusted code.
